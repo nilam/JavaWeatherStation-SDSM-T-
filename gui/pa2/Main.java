@@ -1,5 +1,4 @@
 package gui.pa2;
-import javax.swing.WindowConstants;
 
 public class Main {
 

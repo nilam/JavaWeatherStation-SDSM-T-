@@ -1,5 +1,7 @@
 package gui.pa2;
 
+import java.util.Date;
+
 /* Note: I did this in Eclipse, and let Eclipse generate some of the getters/setters.
  * This is not because I don't understand how, but because it's tedious.
  */
@@ -11,6 +13,7 @@ public class Conditions {
 	private float rain;
 	private float wind;
 	private String windAngle;
+	private Date day;
 	
 	/**
 	 * Create an invalid condition. This allows you to only partially define a condition without worrying about
@@ -28,7 +31,7 @@ public class Conditions {
 	}
 	
 	public Conditions(float temperature, float pressure, float humidity,
-			float uv, float rain, float wind, String windAngle) 
+			float uv, float rain, float wind, String windAngle, Date day) 
 	{
 		this.temperature = temperature;
 		this.pressure = pressure;
@@ -37,6 +40,7 @@ public class Conditions {
 		this.rain = rain;
 		this.wind = wind;
 		this.windAngle = windAngle;
+		this.day = day;
 	}
 	
 	public String toString()
@@ -63,6 +67,21 @@ public class Conditions {
 		return out;
 	}
 
+	/**
+	 * @return the day
+	 */
+	public Date getDay() {
+		return day;
+	}
+
+	/**
+	 * @param day the day to set
+	 */
+	public void setDay(Date day) {
+		this.day = day;
+	}
+
+	
 	/**
 	 * @return the temperature
 	 */

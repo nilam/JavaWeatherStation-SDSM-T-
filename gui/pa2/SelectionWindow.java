@@ -11,6 +11,8 @@ import javax.swing.JFrame;
 
 @SuppressWarnings("serial")
 public class SelectionWindow extends JFrame {
+	
+	private static Conditions[] points;
 
 	public SelectionWindow() throws HeadlessException {
 		super();
@@ -30,7 +32,12 @@ public class SelectionWindow extends JFrame {
 	    // event handler method
 	    public void actionPerformed( ActionEvent event )
 	    {
-	    	GraphWindow g = new GraphWindow();
+	    	points = new Conditions[5];
+	    	for(int i = 0; i < points.length; ++i)
+	    	{
+	    		points[i] = new Conditions();
+	    	}
+	    	GraphWindow g = new GraphWindow(points);
 	    	g.setSize(800,600);
 	    	g.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	    	g.setVisible(true);

@@ -39,14 +39,46 @@ public class XMLParser
     				{
     						Conditions temp = new Conditions();
     						Element child = ( Element ) i.next();
+    						Element condition = child.getChild("temperature");
     						
-    						temp.setTemperature( Float.parseFloat(child.getChild("temperature").getValue()) );
-    						temp.setPressure( Float.parseFloat(child.getChild("barometer").getValue()) );
-    						temp.setHumidity( Float.parseFloat(child.getChild("humidity").getValue()) );
-    						temp.setUv( Float.parseFloat(child.getChild("uvindex").getValue()) );
-    						temp.setRain( Float.parseFloat(child.getChild("rainfall").getValue()) );
-    						temp.setWind( Float.parseFloat(child.getChild("windspeed").getValue()) );
-    						temp.setWindAngle( child.getChild("winddirection").getValue() );
+    						if( condition != null )
+    						{
+    								temp.setTemperature( Float.parseFloat(condition.getValue()) );
+    						}
+    						
+    						condition = child.getChild("barometer");
+    						if( condition != null )
+    						{
+    								temp.setPressure( Float.parseFloat(condition.getValue()) );
+    						}
+    						
+    						condition = child.getChild("humidity");
+    						if( condition != null )
+    						{
+    								temp.setHumidity( Float.parseFloat(condition.getValue()) );
+    						}
+    						
+    						condition = child.getChild("uvindex");
+    						if( condition != null )
+    						{
+    								temp.setUv( Float.parseFloat(condition.getValue()) );
+    						}
+    						
+    						condition = child.getChild("rainfall");
+    						if( condition != null )
+    						{
+    								temp.setRain( Float.parseFloat(condition.getValue()) );
+    						}    						
+    						condition = child.getChild("windspeed");
+    						if( condition != null )
+    						{
+    								temp.setWind( Float.parseFloat(condition.getValue()) );
+    						}    						
+    						condition = child.getChild("winddirection");
+    						if( condition != null )
+    						{
+    								temp.setWindAngle( condition.getValue());
+    						}
     						
     						conditions.add( temp );
     				}

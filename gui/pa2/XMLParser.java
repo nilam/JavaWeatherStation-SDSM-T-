@@ -9,9 +9,9 @@ public class XMLParser
 {
     private String filename;
 
-    public XMLParser()
+    public XMLParser(String file)
     {
-
+    	filename = file;
     }
 
     public String getFileName()

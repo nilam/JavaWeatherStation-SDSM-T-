@@ -1,15 +1,24 @@
 package gui.pa2;
 
-import java.awt.*;
+import java.awt.Button;
+import javax.swing.JFileChooser;
+import java.awt.FlowLayout;
+import java.awt.GraphicsConfiguration;
+import java.awt.HeadlessException;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.Vector;
 
 import javax.swing.JFrame;
 
 @SuppressWarnings("serial")
 public class SelectionWindow extends JFrame {
 	
-	private Conditions[] points;
+	private Vector<Conditions> points;
 
 	public SelectionWindow() throws HeadlessException {
 		super();
@@ -39,12 +48,12 @@ public class SelectionWindow extends JFrame {
 		pack();
 	}
 	
-	public void setPoints(Conditions[] points)
+	public void setPoints(Vector<Conditions> points)
 	{
 		this.points = points;
 	}
 	
-	public Conditions[] getPoints()
+	public Vector<Conditions> getPoints()
 	{
 		return points;
 	}
@@ -58,8 +67,27 @@ public class SelectionWindow extends JFrame {
 		}
 		public void actionPerformed( ActionEvent event)
 		{
-			Conditions[] array = new Conditions[5];
-			frame.setPoints(array);
+			JFileChooser f = new JFileChooser();
+			Vector<Conditions> points = frame.getPoints();
+			f.setMultiSelectionEnabled(true);
+			int answer = f.showOpenDialog(frame);
+			if(answer == JFileChooser.APPROVE_OPTION)
+			{
+				File[] list = f.getSelectedFiles();
+				for(File current : list)
+				{
+					XMLParser p = new XMLParser(current.getAbsolutePath());
+					Vector<Conditions> ls = p.parse();
+					points.addAll(ls);
+				}
+				frame.setPoints(points);
+			}
+			// If points isn't set, let's at least init it.
+			else if(points == null)
+			{
+				Vector<Conditions> array = new Vector<Conditions>();
+				frame.setPoints(array);
+			}
 		}
 	}
 	
@@ -78,18 +106,18 @@ public class SelectionWindow extends JFrame {
 	
 	private static class GraphAction implements ActionListener
 	{
-		Conditions[] points;
-		public GraphAction(Conditions[] points)
+		Vector<Conditions> points;
+		public GraphAction(Vector<Conditions> points)
 		{
 			this.points = points;
 		}
 	    // event handler method
 	    public void actionPerformed( ActionEvent event )
 	    {
-	    	if(points == null) points = new Conditions[5];
-	    	for(int i = 0; i < points.length; ++i)
+	    	if(points == null) points = new Vector<Conditions>();
+	    	for(int i = 0; i < 5; ++i)
 	    	{
-	    		points[i] = new Conditions();
+	    		points.add(new Conditions());
 	    	}
 	    	GraphWindow g = new GraphWindow(points);
 	    	g.setSize(800,600);

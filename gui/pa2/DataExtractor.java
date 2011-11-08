@@ -1,6 +1,5 @@
 package gui.pa2;
-import java.util.*;
-import gui.pa2.Conditions;
+import java.util.ArrayList;
 
 public class DataExtractor {
 			

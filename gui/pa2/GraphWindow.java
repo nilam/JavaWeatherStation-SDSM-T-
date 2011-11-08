@@ -1,8 +1,12 @@
 package gui.pa2;
 
+import java.awt.Color;
+import java.awt.Graphics;
+
+import java.util.Vector;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import java.awt.*;
 
 @SuppressWarnings("serial")
 public class GraphWindow extends JFrame {
@@ -15,7 +19,7 @@ public class GraphWindow extends JFrame {
 		getContentPane().add(l);
 	}
 	
-	public GraphWindow(Conditions[] points)
+	public GraphWindow(Vector<Conditions> points)
 	{
 		super("Rainfall Graph");
 		//JLabel l = new JLabel("Content coming soon!",(int) CENTER_ALIGNMENT);

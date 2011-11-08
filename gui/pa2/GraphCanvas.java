@@ -1,13 +1,16 @@
 package gui.pa2;
 
-import java.awt.*;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.util.Vector;
 
 @SuppressWarnings("serial")
 public class GraphCanvas extends Canvas {
 	
-	Conditions[] points;
+	Vector<Conditions> points;
 	
-	public GraphCanvas(Conditions[] points)
+	public GraphCanvas(Vector<Conditions> points)
 	{
 		super();
 		this.points = points;

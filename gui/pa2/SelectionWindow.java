@@ -22,15 +22,16 @@ public class SelectionWindow extends JFrame {
 
 	public SelectionWindow() throws HeadlessException {
 		super();
+		points = null;
 		
 		// Menu bar initialization
 		MenuBar bar = new MenuBar();
 		Menu m = new Menu("File");
-		MenuItem i = new MenuItem("Quit");
-		i.addActionListener(new Quit(this));
-		m.add(i);
-		i = new MenuItem("Add source file...");
+		MenuItem i = new MenuItem("Add source file...");
 		i.addActionListener(new Open(this));
+		m.add(i);
+		i = new MenuItem("Quit");
+		i.addActionListener(new Quit(this));
 		m.add(i);
 		bar.add(m);
 		setMenuBar(bar);
@@ -38,7 +39,7 @@ public class SelectionWindow extends JFrame {
 		// Content
 		getContentPane().setLayout(new FlowLayout());
 		Button tempButton = new Button("Graph the interval");
-		tempButton.addActionListener(new GraphAction(points));
+		tempButton.addActionListener(new GraphAction(this));
 		getContentPane().add(tempButton);
 		tempButton = new Button("Show various controls");
 		tempButton.addActionListener(new DialAction());
@@ -78,6 +79,9 @@ public class SelectionWindow extends JFrame {
 				{
 					XMLParser p = new XMLParser(current.getAbsolutePath());
 					Vector<Conditions> ls = p.parse();
+					if(points == null)
+						points = new Vector<Conditions>();
+					if(ls != null)
 					points.addAll(ls);
 				}
 				frame.setPoints(points);
@@ -106,20 +110,15 @@ public class SelectionWindow extends JFrame {
 	
 	private static class GraphAction implements ActionListener
 	{
-		Vector<Conditions> points;
-		public GraphAction(Vector<Conditions> points)
+		SelectionWindow frame;
+		public GraphAction(SelectionWindow frame)
 		{
-			this.points = points;
+			this.frame = frame;
 		}
 	    // event handler method
 	    public void actionPerformed( ActionEvent event )
 	    {
-	    	if(points == null) points = new Vector<Conditions>();
-	    	for(int i = 0; i < 5; ++i)
-	    	{
-	    		points.add(new Conditions());
-	    	}
-	    	GraphWindow g = new GraphWindow(points);
+	    	GraphWindow g = new GraphWindow(frame.getPoints());
 	    	g.setSize(800,600);
 	    	g.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	    	g.setVisible(true);

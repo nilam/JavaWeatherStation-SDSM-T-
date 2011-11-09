@@ -22,8 +22,6 @@ public class GraphWindow extends JFrame {
 	public GraphWindow(Vector<Conditions> points)
 	{
 		super("Rainfall Graph");
-		//JLabel l = new JLabel("Content coming soon!",(int) CENTER_ALIGNMENT);
-		//getContentPane().add(l);
 		GraphCanvas g = new GraphCanvas(points);
 		getContentPane().add(g);
 	}

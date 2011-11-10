@@ -1,9 +1,8 @@
 package gui.pa2;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
 
-import java.util.Vector;
+import java.util.*;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,8 +21,42 @@ public class GraphWindow extends JFrame {
 	public GraphWindow(Vector<Conditions> points)
 	{
 		super("Rainfall Graph");
-		GraphCanvas g = new GraphCanvas(points);
-		getContentPane().add(g);
+		getContentPane().setLayout(new GridLayout());
+		TreeSet<ConditionPoint> map = null;
+		if(points != null) 
+		{
+			map = new TreeSet<ConditionPoint>();
+			Calendar c = Calendar.getInstance();
+
+			for(Conditions current : points)
+			{
+				c.setTime(current.getDay());
+				int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / 23;
+				x += c.get(Calendar.MINUTE) / 6;
+				int y = (int) current.getRain();
+				ConditionPoint p = new ConditionPoint(x, y, current);
+				map.add(p);
+			}
+	
+			GraphCanvas g = new GraphCanvas(map);
+			g.setSize(getSize().width / 2, getSize().height / 2 - 25);
+			getContentPane().add(g);
+			
+			map.clear();
+			for(Conditions current : points)
+			{
+				c.setTime(current.getDay());
+				int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / 23;
+				x += c.get(Calendar.MINUTE) / 6;
+				int y = (int) current.getPressure();
+				ConditionPoint p = new ConditionPoint(x, y, current);
+				map.add(p);
+			}
+			g = new GraphCanvas(map);
+			g.setSize(getSize().width / 2, getSize().height / 2 - 25);
+			getContentPane().add(g);
+			getContentPane().validate();
+		}
 	}
 
 }

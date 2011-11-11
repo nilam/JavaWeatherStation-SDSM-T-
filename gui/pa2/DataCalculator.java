@@ -7,6 +7,8 @@ package gui.pa2;
 import java.util.Vector;
 import java.util.Iterator;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 /**
  *
  * @author jmk
@@ -36,6 +38,7 @@ public class DataCalculator {
         double WindSpeedSum = 0.0;
         double maxWindSpeed = 0.0;
         HashMap<String, Integer> windDirCount = new HashMap();
+        String prevailingWind = "";
         
         windDirCount.put( "N",new Integer(0));
         windDirCount.put( "NNE",new Integer(0));
@@ -77,9 +80,25 @@ public class DataCalculator {
             {
                 maxWindSpeed = current.getWind();
             }
-            
+                        
             Integer dir = windDirCount.get( current.getWindAngle() );
             dir++;
+        }
+        
+        Set s = windDirCount.entrySet();
+        int maxCount = 0;
+        
+        i = s.iterator();
+        
+        while( i.hasNext() )
+        {
+            Map.Entry current = (Map.Entry) i.next();
+            
+            if( (Integer) current.getValue() > maxCount )
+            {
+                maxCount = (Integer) current.getValue();
+                prevailingWind = (String) current.getKey();
+            }
         }
         
         map.put( "totalRainfall", new Float(totalRainfall) );
@@ -88,6 +107,7 @@ public class DataCalculator {
         map.put( "maxTemperature", new Float( maxTemp) );
         map.put( "minTemperature", new Float( minTemp) );
         map.put( "maxWindSpeed", new Float( maxWindSpeed) );
+        map.put( "prevailingWind", prevailingWind );
         
         return map;
     }

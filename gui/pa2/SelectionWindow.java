@@ -20,11 +20,13 @@ public class SelectionWindow extends JFrame {
 	
 	private Vector<Conditions> points;
 	private TreeMap<String, Vector<Conditions>> map;
+	String day;
 
 	public SelectionWindow() throws HeadlessException {
 		super();
 		points = null;
 		map = new TreeMap<String, Vector<Conditions>>();
+		day = null;
 		
 		// Menu bar initialization
 		MenuBar bar = new MenuBar();
@@ -57,7 +59,7 @@ public class SelectionWindow extends JFrame {
 		{
 			Calendar c = Calendar.getInstance();
 			c.setTime(current.getDay());
-			String day = "Day " + c.get(Calendar.DAY_OF_MONTH) + " of " + c.get(Calendar.MONTH) + ", " + c.get(Calendar.YEAR);
+			day = "Day " + c.get(Calendar.DAY_OF_MONTH) + " of " + c.get(Calendar.MONTH) + ", " + c.get(Calendar.YEAR);
 			if(map.containsKey(day))
 			{
 				map.get(day).add(current);
@@ -69,6 +71,7 @@ public class SelectionWindow extends JFrame {
 				map.put(day, vec);
 			}
 		}
+		setPoints(map.get(day));
 	}
 	
 	public void setPoints(Vector<Conditions> points)

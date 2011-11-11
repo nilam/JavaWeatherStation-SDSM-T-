@@ -5,7 +5,6 @@ import java.util.*;
 
 @SuppressWarnings("serial")
 public class GraphCanvas extends Canvas {
-	public enum CONDS {RAIN, PRESSURE};
 	
 	// The conditions to graph
 	TreeSet<ConditionPoint> map;
@@ -23,6 +22,13 @@ public class GraphCanvas extends Canvas {
 		g.drawRect(0, 0, getSize().width, getSize().height);
 		// Draw the y-axis
 		g.setColor(Color.BLACK);
+		int width = getSize().width;
+		int height = getSize().height;
+		for(int i = 0; i < 24; ++i)
+		{
+			int x = (int)(i / 23.0 * (width - 70) ) + 35;
+			g.drawString(""+i, x, height - 5);
+		}
 		g.drawLine(35, 25, 35, getSize().height - 25);
 		// Draw the x-axis
 		g.drawLine(35, getSize().height - 25, getSize().width - 35, getSize().height - 25);
@@ -42,8 +48,6 @@ public class GraphCanvas extends Canvas {
 		{
 			Iterator<ConditionPoint> points = map.descendingIterator();
 			g.setColor(Color.BLACK);
-			int height = getSize().height;
-			int width = getSize().width;
 			
 			ConditionPoint now = points.next();
 			if(points.hasNext())
@@ -55,9 +59,9 @@ public class GraphCanvas extends Canvas {
 				int bx = net.getX();
 				int by = net.getY();
 				ax = (int)(ax / 1000.0 * (width - 75) + 35);
-				ay = (int)(height - ay - 30);
+				ay = height - (int)( (ay / 1000.00 * height) ) - 30;
 				bx = (int)(bx / 1000.0 * (width - 75) + 35);
-				by = (int)(height - by - 30);
+				by = height - (int)( by / 1000.0 * height) - 30;
 				g.drawLine(ax, ay, bx, by);
 				now = net;
 			}while (points.hasNext());
@@ -68,11 +72,13 @@ public class GraphCanvas extends Canvas {
 				ax = (int)(ax/1000.0 * (width - 75) + 35);
 				g.fillRect(ax, ay, 3, 3);
 			}
+			/*
 			g.setColor(Color.BLUE);
 			for(int i = 1; i < 24; ++i)
 			{
 				g.drawLine((int)((i / 23.0) * (width - 75)) + 35, height - 25, (int)((i / 23.0) * (width - 75)) + 35, 25);
 			}
+			*/
 		}
 	}
 }

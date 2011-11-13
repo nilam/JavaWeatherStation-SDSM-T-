@@ -1,7 +1,7 @@
 package gui.pa2;
 
 import java.awt.Button;
-import javax.swing.JFileChooser;
+import javax.swing.*;
 import java.awt.FlowLayout;
 import java.awt.GraphicsConfiguration;
 import java.awt.HeadlessException;
@@ -20,7 +20,7 @@ public class SelectionWindow extends JFrame {
 	
 	private Vector<Conditions> points;
 	private TreeMap<String, Vector<Conditions>> map;
-	String day;
+	private String day;
 
 	public SelectionWindow() throws HeadlessException {
 		super();
@@ -36,6 +36,11 @@ public class SelectionWindow extends JFrame {
 		m.add(i);
 		i = new MenuItem("Quit");
 		i.addActionListener(new Quit(this));
+		m.add(i);
+		bar.add(m);
+		m = new Menu("Help");
+		i = new MenuItem("About the Weather Viewer...");
+		i.addActionListener(new About(this));
 		m.add(i);
 		bar.add(m);
 		setMenuBar(bar);
@@ -59,7 +64,7 @@ public class SelectionWindow extends JFrame {
 		{
 			Calendar c = Calendar.getInstance();
 			c.setTime(current.getDay());
-			day = "Day " + c.get(Calendar.DAY_OF_MONTH) + " of " + c.get(Calendar.MONTH) + ", " + c.get(Calendar.YEAR);
+			day = "Day " + c.get(Calendar.DAY_OF_MONTH) + " of " + c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US) + ", " + c.get(Calendar.YEAR);
 			if(map.containsKey(day))
 			{
 				map.get(day).add(current);
@@ -82,6 +87,26 @@ public class SelectionWindow extends JFrame {
 	public Vector<Conditions> getPoints()
 	{
 		return points;
+	}
+	
+	public String getDay()
+	{
+		return day;
+	}
+	
+	private static class About implements ActionListener
+	{
+		private JFrame frame;
+		
+		public About(JFrame ok)
+		{
+			frame = ok;
+		}
+		
+		public void actionPerformed(ActionEvent arg0) 
+		{
+			JOptionPane.showMessageDialog(frame, "Java XML-parsing weather station viewer, Version 0.0.1");
+		}
 	}
 	
 	private static class Open implements ActionListener
@@ -144,10 +169,17 @@ public class SelectionWindow extends JFrame {
 	    // event handler method
 	    public void actionPerformed( ActionEvent event )
 	    {
-	    	GraphWindow g = new GraphWindow(frame.getPoints());
-	    	g.setSize(800,600);
-	    	g.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-	    	g.setVisible(true);
+	    	if(frame.getPoints() == null || frame.getPoints().isEmpty())
+	    	{
+	    		JOptionPane.showMessageDialog(frame, new JLabel("Oops, it looks like you forgot to initialize data! Please go to the file menu and open one or more valid XML files."));
+	    	}
+	    	else
+	    	{
+		    	GraphWindow g = new GraphWindow(frame.getPoints(), frame.getDay());
+		    	g.setSize(800,600);
+		    	g.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		    	g.setVisible(true);
+	    	}
 	    }
 	}
 	private static class DialAction implements ActionListener

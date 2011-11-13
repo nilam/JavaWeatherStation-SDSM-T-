@@ -5,10 +5,8 @@
 package gui.pa2;
 
 import java.util.Vector;
-import java.util.Iterator;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Map;
-import java.util.Set;
 /**
  *
  * @author jmk
@@ -24,12 +22,12 @@ public class DataCalculator {
     
     public DataCalculator()
     {
-        
+        points = null;
     }
     
-    public HashMap<String,Object> computeData()
+    public TreeMap<String,Object> computeData()
     {
-        HashMap<String, Object> map = new HashMap();
+        TreeMap<String, Object> map = new TreeMap<String, Object>();
         
         double totalRainfall = 0.0;
         double TempSum = 0.0;
@@ -37,7 +35,7 @@ public class DataCalculator {
         double minTemp = 1000.0;
         double WindSpeedSum = 0.0;
         double maxWindSpeed = 0.0;
-        HashMap<String, Integer> windDirCount = new HashMap();
+        TreeMap<String, Integer> windDirCount = new TreeMap<String, Integer>();
         String prevailingWind = "";
         
         windDirCount.put( "N",new Integer(0));
@@ -57,12 +55,8 @@ public class DataCalculator {
         windDirCount.put( "NW",new Integer(0));
         windDirCount.put( "NNW",new Integer(0));
         
-        Iterator i = points.iterator();
-        
-        while( i.hasNext() )
-        {
-            Conditions current = (Conditions) i.next();
-            
+        for(Conditions current : points)
+        {            
             totalRainfall += current.getRain();
             TempSum = current.getTemperature();
             WindSpeedSum = current.getWind();
@@ -81,33 +75,29 @@ public class DataCalculator {
                 maxWindSpeed = current.getWind();
             }
                         
-            Integer dir = windDirCount.get( current.getWindAngle() );
-            dir++;
+            int dir = windDirCount.get( current.getWindAngle().trim() );
+            ++dir;
+            windDirCount.put(current.getWindAngle().trim(), dir);
         }
         
-        Set s = windDirCount.entrySet();
         int maxCount = 0;
         
-        i = s.iterator();
-        
-        while( i.hasNext() )
-        {
-            Map.Entry current = (Map.Entry) i.next();
-            
+        for( Map.Entry<String, Integer> current : windDirCount.entrySet())
+        {            
             if( (Integer) current.getValue() > maxCount )
             {
                 maxCount = (Integer) current.getValue();
                 prevailingWind = (String) current.getKey();
             }
         }
-        
-        map.put( "totalRainfall", new Float(totalRainfall) );
-        map.put( "averageTemp", new Float( TempSum / points.size() ) );
-        map.put( "averageWindSpeed", new Float( WindSpeedSum / points.size() ) );
-        map.put( "maxTemperature", new Float( maxTemp) );
-        map.put( "minTemperature", new Float( minTemp) );
-        map.put( "maxWindSpeed", new Float( maxWindSpeed) );
-        map.put( "prevailingWind", prevailingWind );
+
+        map.put( "  Average Wind Speed", new Float( WindSpeedSum / points.size() ) );
+        map.put( "Total Rainfall", new Float(totalRainfall) );
+        map.put( " Average Temperature", new Float( TempSum / points.size() ) );
+        map.put( " Max Temperature", new Float( maxTemp) );
+        map.put( " Min Temperature", new Float( minTemp) );
+        map.put( "  Max Wind Speed", new Float( maxWindSpeed) );
+        map.put( "  Prevailing Wind", prevailingWind );
         
         return map;
     }

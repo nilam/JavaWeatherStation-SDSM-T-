@@ -8,11 +8,14 @@ public class GraphCanvas extends Canvas {
 	
 	// The conditions to graph
 	TreeSet<ConditionPoint> map;
+	// The title of the graph.
+	String title;
 	
-	public GraphCanvas(TreeSet<ConditionPoint> points)
+	public GraphCanvas(TreeSet<ConditionPoint> points, String title)
 	{
 		super();
 		this.map = points;
+		this.title = title;
 	}
 	
 	public void paint(Graphics g)
@@ -32,6 +35,7 @@ public class GraphCanvas extends Canvas {
 		g.drawLine(35, 25, 35, getSize().height - 25);
 		// Draw the x-axis
 		g.drawLine(35, getSize().height - 25, getSize().width - 35, getSize().height - 25);
+		g.drawString(title, getSize().width / 4, 20);
 		// Check to see if we have points.
 		if(map == null || map.isEmpty())
 		{

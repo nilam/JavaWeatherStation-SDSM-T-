@@ -64,7 +64,7 @@ public class SelectionWindow extends JFrame {
 		{
 			Calendar c = Calendar.getInstance();
 			c.setTime(current.getDay());
-			day = "Day " + c.get(Calendar.DAY_OF_MONTH) + " of " + c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US) + ", " + c.get(Calendar.YEAR);
+			day = c.get(Calendar.DAY_OF_MONTH) + " of " + c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US) + ", " + c.get(Calendar.YEAR);
 			if(map.containsKey(day))
 			{
 				map.get(day).add(current);

@@ -15,19 +15,27 @@ public class Conditions {
 	private String windAngle;
 	private Date day;
 	
+	public final static float INVALID_TEMP = -500;
+	public final static float INVALID_PRESSURE = 0;
+	public final static float INVALID_HUMIDITY = -1;
+	public final static float INVALID_UV = -1;
+	public final static float INVALID_RAIN = -1;
+	public final static float INVALID_WIND = -1;
+	public final static String INVALID_DIRECTION = "Undefined Direction";
+	
 	/**
 	 * Create an invalid condition. This allows you to only partially define a condition without worrying about
 	 * how to describe missing conditions at a given data point.
 	 */
 	public Conditions()
 	{
-		temperature = -500; // Absolute 0 is ~459 F
-		pressure = 0; // 0 mmHg is a vacuum.
-		humidity = -1; // Humidity is a percent.
-		uv = -1; // UV Index is only defined between 0 and 15
-		rain = -1; // Rainfall can't be less than 0
-		wind = -1; // Wind in the backwards direction should go the other way.
-		windAngle = "Undefined Direction"; // Normally one of the 16 values.
+		temperature = INVALID_TEMP; // Absolute 0 is ~459 F
+		pressure = INVALID_PRESSURE; // 0 mmHg is a vacuum.
+		humidity = INVALID_HUMIDITY; // Humidity is a percent.
+		uv = INVALID_UV; // UV Index is only defined between 0 and 15
+		rain = INVALID_RAIN; // Rainfall can't be less than 0
+		wind = INVALID_WIND; // Wind in the backwards direction should go the other way.
+		windAngle = INVALID_DIRECTION; // Normally one of the 16 values.
 	}
 	
 	public Conditions(float temperature, float pressure, float humidity,

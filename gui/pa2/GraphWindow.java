@@ -17,10 +17,12 @@ public class GraphWindow extends JFrame {
 	 * @param points a vector of gui.pa2.Conditions describing the weather over the interval.
 	 * @param today the date, as a string formatted as the date should appear on the graphs and title bar.
 	 */
-	public GraphWindow(Vector<Conditions> points, String today)
+	public GraphWindow(Vector<Conditions> in_pts, String today)
 	{
 		// Basic constructor necessity
 		super("Graph for " + today);
+		// Prevent concurrency issues
+		Vector<Conditions> points = new Vector<Conditions> (in_pts);
 		// We're using a hand-coded GroupLayout for this window.
 		GroupLayout layout = new GroupLayout(getContentPane());
 		getContentPane().setLayout(layout);

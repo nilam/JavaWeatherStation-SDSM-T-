@@ -76,7 +76,7 @@ public class SelectionWindow extends JFrame {
 				map.put(day, vec);
 			}
 		}
-		setPoints(map.get(day));
+		setPoints(new Vector<Conditions>(map.get(day)));
 	}
 	
 	public void setPoints(Vector<Conditions> points)

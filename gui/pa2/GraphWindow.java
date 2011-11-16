@@ -1,5 +1,8 @@
 package gui.pa2;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.*;
 
 import javax.swing.*;
@@ -38,7 +41,7 @@ public class GraphWindow extends JFrame {
 			// For each Conditions called current in the collection points
 			for(Conditions current : points)
 			{
-				if(current.getRain() != Conditions.INVALID_TEMP)
+				if(current.getRain() != Conditions.INVALID_RAIN)
 				{
 					// Use the time of day for this particular point as our calendar point.
 					c.setTime(current.getDay());
@@ -48,13 +51,14 @@ public class GraphWindow extends JFrame {
 					 * a scientific program that can be +/-.0001, since FPUs are terribly imprecise. 
 					 */
 					int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / 23;
-					x += c.get(Calendar.MINUTE) / 6;
+					x += c.get(Calendar.MINUTE) / 2;
 					/* The y value should also be a fixed-point proportion. 15 is used as a baseline right now, but in the
 					 * future we may adjust this so it is proportional to the difference in the min and max values for
 					 * the data set.
 					 */
 					float max = (Float)data.get(DataCalculator.MAX_RAIN);
-					int y = (int) (current.getRain() * 500 / max) + 10;
+					float min = (Float)data.get(DataCalculator.MIN_RAIN);
+					int y = (int) ((current.getRain() - min) / (max - min) * 500);
 					// Use the above proportions to create a new data point.
 					ConditionPoint p = new ConditionPoint(x, y, current);
 					// Add the point to our sorted map.
@@ -77,10 +81,11 @@ public class GraphWindow extends JFrame {
 				// See above about proportions and using fixed vs. floating point.
 				c.setTime(current.getDay());
 				int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / 23;
-				x += c.get(Calendar.MINUTE) / 6;
+				x += c.get(Calendar.MINUTE) / 2;
+				float max = (Float)data.get(DataCalculator.MAX_PRESSURE);
+				float min = (Float)data.get(DataCalculator.MIN_PRESSURE);
 				// Barometric pressure rarely, if ever, gets above 40 in Hg, and is rarely less than 25 in Hg.
-				int y = (int)current.getPressure() - 20;
-				y *= 200 / 3;
+				int y = (int)((current.getPressure() - min) / (max - min) * 500);
 				ConditionPoint p = new ConditionPoint(x, y, current);
 				map.add(p);
 			}
@@ -98,14 +103,27 @@ public class GraphWindow extends JFrame {
 				// See above about proportions and using fixed vs. floating point.
 				c.setTime(current.getDay());
 				int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / 23;
-				x += c.get(Calendar.MINUTE) / 6;
-				// Barometric pressure rarely, if ever, gets above 40 in Hg, and is rarely less than 25 in Hg.
-				int y = (int)(current.getTemperature()) * 1000 / 180 + 50;
+				x += c.get(Calendar.MINUTE) / 2;
+				float max = (Float)data.get(DataCalculator.MAX_TEMP);
+				float min = (Float)data.get(DataCalculator.MIN_TEMP);
+				int y = (int)((current.getTemperature() - min) / (max - min) * 500);
 				ConditionPoint p = new ConditionPoint(x, y, current);
 				map.add(p);
 			}
 		}
 		GraphCanvas g3 = new GraphCanvas(map, "Temperature for " + today, "Degrees F");
+		
+		// A special informational pane.
+		InfoPane pane = new InfoPane();
+		pane.setSize(new java.awt.Dimension(100,100));
+		g3.addMouseListener(new PointClick(pane));
+		g2.addMouseListener(new PointClick(pane));
+		g1.addMouseListener(new PointClick(pane));
+		/*
+		g1.addMouseMotionListener(new PointFollow(pane));
+		g2.addMouseMotionListener(new PointFollow(pane));
+		g3.addMouseMotionListener(new PointFollow(pane));
+		*/
 		
 		// A series of JLabels will contain the relevant data.
 		JLabel[] dataValues = new JLabel[data.size()];
@@ -148,6 +166,9 @@ public class GraphWindow extends JFrame {
 		columns.addGap(5);
 		// Add all those little labels.
 		columns.addGroup(col);
+		columns.addGap(5);
+		// Add in the info pane.
+		columns.addComponent(pane);
 		// Make columns the layout as things go from left to right.
 		layout.setHorizontalGroup(columns);
 		// Get a proper layout for the individual rows.
@@ -163,12 +184,100 @@ public class GraphWindow extends JFrame {
 						addComponent(g1, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addGap(5).
 						addComponent(g2, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addGap(5).
 						addComponent(g3, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).
-				addGroup(panel));
+				addGroup(panel).
+				addComponent(pane));
 		// Use this layout for the vertical direction.
 		layout.setVerticalGroup(rows);
 		
 		// Pack it all in.
 		pack();
+		
+	}
+	
+	private class PointFollow implements MouseMotionListener
+	{
+		public PointFollow(InfoPane pane)
+		{
+	//		target = pane;
+		}
+		@Override
+		public void mouseDragged(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		public void mouseMoved(MouseEvent arg0) 
+		{
+//			int x = arg0.getX();
+//			int y = arg0.getY();
+//			GraphCanvas c = (GraphCanvas)arg0.getSource();
+//			c.setPoint(new java.awt.Point(x,y));
+//			c.repaint();
+		}
+	}
+	
+	private class PointClick implements MouseListener
+	{
+		private InfoPane target;
+		
+		public PointClick(InfoPane pane)
+		{
+			target = pane;
+		}
+
+		public void mouseClicked(MouseEvent arg0) 
+		{
+			int x = arg0.getX();
+			int y = arg0.getY();
+			Conditions dummy = new Conditions();
+			ConditionPoint pt = new ConditionPoint(x, y, dummy);
+			GraphCanvas canvas = (GraphCanvas)arg0.getSource();
+			if(canvas.getRelative() != null)
+			{
+			    Iterator<ConditionPoint> it = canvas.getRelative().iterator();
+			    boolean cont = true;
+			    ConditionPoint holder = null;
+			    while(it.hasNext() && cont)
+			    {
+			    	holder = it.next();
+			    	if(Math.abs( holder.compareTo(pt) ) < 5 ) System.out.println(Math.abs( holder.compareTo(pt)));
+			    	if( Math.abs( holder.compareTo(pt) )  < 5)
+			    	{
+			    		cont = false;
+			    	}
+			    }
+			    
+			    if(cont == true) holder = null;
+			    
+			    target.setPoint(holder);
+			    target.showInfo();
+			}
+		}
+
+		public void mouseEntered(MouseEvent arg0) {
+//			int x = arg0.getX();
+//			int y = arg0.getY();
+//			GraphCanvas c = (GraphCanvas)arg0.getSource();
+//			c.setPoint(new java.awt.Point(x,y));
+//			c.repaint();
+		}
+
+		public void mouseExited(MouseEvent arg0) 
+		{
+			GraphCanvas c = (GraphCanvas)arg0.getSource();
+			c.setPoint(new java.awt.Point(0,0));
+			c.repaint();
+		}
+
+		public void mousePressed(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public void mouseReleased(MouseEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
 		
 	}
 

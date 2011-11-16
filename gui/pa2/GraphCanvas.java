@@ -7,10 +7,27 @@ import java.util.*;
 public class GraphCanvas extends Canvas {
 	
 	// The conditions to graph
-	TreeSet<ConditionPoint> map;
+	private TreeSet<ConditionPoint> map;
+	private Vector<ConditionPoint> relativeMap;
 	// The title of the graph.
-	String title;
-	String units;
+	private String title;
+	private String units;
+	private Point pt;
+	
+	public TreeSet<ConditionPoint> getMap()
+	{
+		return map;
+	}
+	
+	public Vector<ConditionPoint> getRelative()
+	{
+		return relativeMap;
+	}
+	
+	public void setPoint(Point p)
+	{
+		pt = p;
+	}
 	
 	public GraphCanvas(TreeSet<ConditionPoint> points, String title, String unit)
 	{
@@ -18,6 +35,8 @@ public class GraphCanvas extends Canvas {
 		this.map = points;
 		this.title = title;
 		units = unit;
+		pt = new Point(0,0);
+		relativeMap = new Vector<ConditionPoint>();
 	}
 	
 	public void paint(Graphics g)
@@ -26,8 +45,16 @@ public class GraphCanvas extends Canvas {
 		int width = getSize().width;
 		int height = getSize().height;
 		// Set the background.
-		g.setColor(Color.WHITE);
-		g.fillRect(0, 0, getSize().width, getSize().height);
+		//g.setColor(new Color(0xCC, 0xCC, 0xFF));
+		//g.fillRect(0, 0, getSize().width, getSize().height);
+
+		/*
+		for(int i = 0; i < height / 10 + 10; ++i)
+		{
+			g.setColor(new Color(0xCC - 3 * i, 0xCC - 3 * i, 0xFF - 3 * i) );
+			g.fillRect(0, 10 * i, width, 10);
+		}
+		*/
 		g.setColor(Color.BLACK);
 		g.drawRect(0,0,width - 1, height - 1);
 		
@@ -64,6 +91,7 @@ public class GraphCanvas extends Canvas {
 			g.setColor(Color.BLUE);
 			
 			ConditionPoint now = points.next();
+			if(relativeMap != null) relativeMap = new Vector<ConditionPoint>();
 			if(points.hasNext())
 			do
 			{
@@ -77,6 +105,8 @@ public class GraphCanvas extends Canvas {
 				bx = (int)(bx / 1000.0 * (width - 75) + 35);
 				by = height - (int)( by / 1000.0 * height) - 45;
 				g.drawLine(ax, ay, bx, by);
+				g.fillOval(ax, ay, 3, 3);
+				relativeMap.add( new ConditionPoint( ax, ay, now.getData() ) );
 				now = net;
 			}while (points.hasNext());
 			else
@@ -85,6 +115,30 @@ public class GraphCanvas extends Canvas {
 				int ay = now.getY();
 				ax = (int)(ax/1000.0 * (width - 75) + 35);
 				g.fillRect(ax, ay, 3, 3);
+			}
+			if(pt.x != 0 && pt.y != 0)
+			{
+				ConditionPoint mouse = new ConditionPoint(pt.x, pt.y, new Conditions());
+				ConditionPoint closest = new ConditionPoint(now.getX(), now.getY(), now.getData());
+				for( ConditionPoint current : relativeMap)
+				{
+					if( Math.abs( current.compareTo(mouse) ) < Math.abs(closest.compareTo(mouse) ) )
+					{
+						closest = current;
+					}
+				}
+				g.setColor(Color.RED);
+				g.drawLine(closest.getX(), closest.getY(), mouse.getX(), mouse.getY());
+				g.setColor(Color.CYAN);
+				g.fillRect(width - 85, 0, width, 20);
+				g.setColor(Color.BLACK);
+				g.drawString(closest.getX() + ", " + closest.getY(), width - 80, 15);
+				
+				g.setColor(Color.PINK);
+				for(ConditionPoint p : relativeMap)
+				{
+					g.drawOval(p.getX(), p.getY(), 3, 3);
+				}
 			}
 		}
 	}

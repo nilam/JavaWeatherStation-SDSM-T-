@@ -115,9 +115,77 @@ public class GraphWindow extends JFrame {
 		}
 		GraphCanvas g3 = new GraphCanvas(map, "Temperature for " + today, "Degrees F");
 		
+                
+                map = new TreeSet<ConditionPoint>();
+                if(points != null)
+                {
+                    Calendar c = Calendar.getInstance();
+                    
+                    for( Conditions current : points )
+                    {
+                        
+                        c.setTime(current.getDay());
+                        int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / 23;
+                        x += c.get(Calendar.MINUTE) / 2;
+
+                        float max = (Float)data.get(DataCalculator.MAX_WIND);
+                        int y = (int)(current.getWind() / max * 500);
+                        
+                        ConditionPoint p = new ConditionPoint(x, y, current);
+                        map.add(p);
+                    }
+                    
+                }
+                GraphCanvas g4 = new GraphCanvas(map,"Wind Speed for " + today, "MPH");
+                
+                map = new TreeSet<ConditionPoint>();
+                if(points != null)
+                {
+                    Calendar c = Calendar.getInstance();
+                    
+                    for( Conditions current : points )
+                    {
+                        c.setTime(current.getDay());
+                        int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / 23;
+                        x += c.get(Calendar.MINUTE) / 2;
+                        
+                        double max = (Double)data.get(DataCalculator.MAX_HUM);
+                        double min = (Double)data.get(DataCalculator.MIN_HUM);
+                        int y = (int)((current.getHumidity() - min) / (max - min) * 500);
+                        
+                        ConditionPoint p = new ConditionPoint(x, y, current);
+                        map.add(p);
+                    }
+                }
+                GraphCanvas g5 = new GraphCanvas(map, "Humidity for " + today, "%");
+               
+                map = new TreeSet<ConditionPoint>();
+                if(points != null)
+                {
+                    Calendar c = Calendar.getInstance();
+                    
+                    for( Conditions current : points )
+                    {
+                        c.setTime(current.getDay());
+                        int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / 23;
+                        x += c.get(Calendar.MINUTE) / 2;
+                        
+                        float max = (Float)data.get(DataCalculator.MAX_UV);
+                        float min = (Float)data.get(DataCalculator.MIN_UV);
+                        int y = (int)((current.getUv() - min) / (max - min) * 500);
+                        
+                        ConditionPoint p = new ConditionPoint(x, y, current);
+                        map.add(p);
+                    }
+                }
+                GraphCanvas g6 = new GraphCanvas(map, "UV Index for " + today, "");
+                
 		// A special informational pane.
 		InfoPane pane = new InfoPane();
 		pane.setSize(new java.awt.Dimension(100,100));
+                g6.addMouseListener(new PointClick(pane));                
+                g5.addMouseListener(new PointClick(pane));
+                g4.addMouseListener(new PointClick(pane));
 		g3.addMouseListener(new PointClick(pane));
 		g2.addMouseListener(new PointClick(pane));
 		g1.addMouseListener(new PointClick(pane));
@@ -164,7 +232,7 @@ public class GraphWindow extends JFrame {
 		// Collection for the horizontal direction of the window.
 		GroupLayout.SequentialGroup columns = layout.createSequentialGroup();
 		// Add the graphs, one after the other.
-		columns.addGroup(layout.createParallelGroup().addComponent(g1).addComponent(g2).addComponent(g3));
+		columns.addGroup(layout.createParallelGroup().addComponent(g1).addComponent(g2).addComponent(g3).addComponent(g4).addComponent(g5).addComponent(g6));
 		columns.addGap(5);
 		// Add all those little labels.
 		columns.addGroup(col);
@@ -185,7 +253,10 @@ public class GraphWindow extends JFrame {
 						layout.createSequentialGroup().
 						addComponent(g1, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addGap(5).
 						addComponent(g2, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addGap(5).
-						addComponent(g3, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).
+						addComponent(g3, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addGap(5).
+                                                addComponent(g4, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addGap(5).
+                                                addComponent(g5, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addGap(5).
+                                                addComponent(g6, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)).
 				addGroup(panel).
 				addComponent(pane));
 		// Use this layout for the vertical direction.

@@ -12,6 +12,7 @@ public class GraphCanvas extends Canvas {
 	// The title of the graph.
 	private String title;
 	private String units;
+        private String timeUnits;
 	private Point pt;
 	
 	public TreeSet<ConditionPoint> getMap()
@@ -29,12 +30,13 @@ public class GraphCanvas extends Canvas {
 		pt = p;
 	}
 	
-	public GraphCanvas(TreeSet<ConditionPoint> points, String title, String unit)
+	public GraphCanvas(TreeSet<ConditionPoint> points, String title, String unit, String timeUnits)
 	{
 		super();
 		this.map = points;
 		this.title = title;
 		units = unit;
+                this.timeUnits = timeUnits;
 		pt = new Point(0,0);
 		relativeMap = new Vector<ConditionPoint>();
 	}
@@ -71,7 +73,7 @@ public class GraphCanvas extends Canvas {
 			g.drawString(""+i, x, height - 25);
 		}
 		//g.drawString(units, width / 2, height - 5);
-		g.drawString("Hour", width / 2, height - 6);
+		g.drawString(timeUnits, width / 2, height - 6);
 		// Draw the title.
 		g.drawString(title, getSize().width / 4, 20);
 		

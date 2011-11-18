@@ -10,6 +10,18 @@ import javax.swing.*;
 @SuppressWarnings("serial")
 public class GraphWindow extends JFrame {
 	
+    
+        public final static int DAY = 0;
+        public final static int WEEK = 1;
+        public final static int MONTH = 2;
+        public final static int YEAR = 3;
+        private String[] timeStrings = {"Hour", "Day", "Day", "Day"};
+        
+        
+        public GraphWindow(Vector<Conditions> in_pts, String today)
+        {
+            this( in_pts, today, GraphWindow.DAY);
+        }
 	/**
 	 * Creates a new daily graph window from the given set of conditions and day.
 	 * The day should be passed in as a string in the format it should appear on
@@ -17,7 +29,7 @@ public class GraphWindow extends JFrame {
 	 * @param points a vector of gui.pa2.Conditions describing the weather over the interval.
 	 * @param today the date, as a string formatted as the date should appear on the graphs and title bar.
 	 */
-	public GraphWindow(Vector<Conditions> in_pts, String today)
+	public GraphWindow(Vector<Conditions> in_pts, String today, int timePeriod )
 	{
 		// Basic constructor necessity
 		super("Graph for " + today);
@@ -33,6 +45,10 @@ public class GraphWindow extends JFrame {
 		// Calculate the different values that we need. These are used in calculating proportional averages.
 		DataCalculator d = new DataCalculator(points);
 		TreeMap<String, Object> data = d.computeData();
+                
+                int divisor = 1;
+                
+                
 		// Trying to do some basic sanity testing; caller should NOT pass in a null vector.
 		if(points != null) 
 		{
@@ -40,6 +56,26 @@ public class GraphWindow extends JFrame {
 			// Since we used the date class for the Conditions, we need a calendar to properly access its elements.
 			Calendar c = Calendar.getInstance();
 
+                        switch( timePeriod )
+                        {
+                            case 0:
+                                divisor = 23;
+                                break;
+                            case 1:
+                                divisor = 7;
+                                break;
+                            case 2:
+                                Conditions first = points.firstElement();
+                                c.setTime(first.getDay());
+                                divisor = c.getActualMaximum(c.DAY_OF_MONTH);
+                                break;
+                            case 3:
+                                first = points.firstElement();
+                                c.setTime(first.getDay());
+                                divisor = c.getActualMaximum(c.DAY_OF_YEAR);
+                                break;
+                        }
+                        
 			// For each Conditions called current in the collection points
 			for(Conditions current : points)
 			{
@@ -52,7 +88,7 @@ public class GraphWindow extends JFrame {
 					 * The entire thing uses a fixed-point system; I don't like to use floats or doubles unless it's
 					 * a scientific program that can be +/-.0001, since FPUs are terribly imprecise. 
 					 */
-					int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / 23;
+					int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / divisor;
 					x += c.get(Calendar.MINUTE) / 2;
 					/* The y value should also be a fixed-point proportion. 15 is used as a baseline right now, but in the
 					 * future we may adjust this so it is proportional to the difference in the min and max values for
@@ -70,7 +106,7 @@ public class GraphWindow extends JFrame {
 		}
 		
 		// Create a graph canvas from the formatted data.
-		GraphCanvas g1 = new GraphCanvas(map, "Rainfall for " + today, "Inches");
+		GraphCanvas g1 = new GraphCanvas(map, "Rainfall for " + today, "Inches", timeStrings[timePeriod]);
 		
 		// again, a minor sanity check.
 		if(map != null) map = new TreeSet<ConditionPoint>();
@@ -82,7 +118,7 @@ public class GraphWindow extends JFrame {
 			{
 				// See above about proportions and using fixed vs. floating point.
 				c.setTime(current.getDay());
-				int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / 23;
+				int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / divisor;
 				x += c.get(Calendar.MINUTE) / 2;
 				float max = (Float)data.get(DataCalculator.MAX_PRESSURE);
 				float min = (Float)data.get(DataCalculator.MIN_PRESSURE);
@@ -93,7 +129,7 @@ public class GraphWindow extends JFrame {
 			}
 		}
 		// Separate variable, because we need to graph these pieces in the group window separately.
-		GraphCanvas g2 = new GraphCanvas(map, "Barometric Pressure for " + today, "Inches Hg");
+		GraphCanvas g2 = new GraphCanvas(map, "Barometric Pressure for " + today, "Inches Hg", timeStrings[timePeriod]);
 		
 		map = new TreeSet<ConditionPoint>();
 		if(points != null)
@@ -104,7 +140,7 @@ public class GraphWindow extends JFrame {
 			{
 				// See above about proportions and using fixed vs. floating point.
 				c.setTime(current.getDay());
-				int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / 23;
+				int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / divisor;
 				x += c.get(Calendar.MINUTE) / 2;
 				float max = (Float)data.get(DataCalculator.MAX_TEMP);
 				float min = (Float)data.get(DataCalculator.MIN_TEMP);
@@ -113,7 +149,7 @@ public class GraphWindow extends JFrame {
 				map.add(p);
 			}
 		}
-		GraphCanvas g3 = new GraphCanvas(map, "Temperature for " + today, "Degrees F");
+		GraphCanvas g3 = new GraphCanvas(map, "Temperature for " + today, "Degrees F", timeStrings[timePeriod]);
 		
                 
                 map = new TreeSet<ConditionPoint>();
@@ -125,7 +161,7 @@ public class GraphWindow extends JFrame {
                     {
                         
                         c.setTime(current.getDay());
-                        int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / 23;
+                        int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / divisor;
                         x += c.get(Calendar.MINUTE) / 2;
 
                         float max = (Float)data.get(DataCalculator.MAX_WIND);
@@ -136,7 +172,7 @@ public class GraphWindow extends JFrame {
                     }
                     
                 }
-                GraphCanvas g4 = new GraphCanvas(map,"Wind Speed for " + today, "MPH");
+                GraphCanvas g4 = new GraphCanvas(map,"Wind Speed for " + today, "MPH", timeStrings[timePeriod]);
                 
                 map = new TreeSet<ConditionPoint>();
                 if(points != null)
@@ -146,7 +182,7 @@ public class GraphWindow extends JFrame {
                     for( Conditions current : points )
                     {
                         c.setTime(current.getDay());
-                        int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / 23;
+                        int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / divisor;
                         x += c.get(Calendar.MINUTE) / 2;
                         
                         double max = (Double)data.get(DataCalculator.MAX_HUM);
@@ -157,7 +193,7 @@ public class GraphWindow extends JFrame {
                         map.add(p);
                     }
                 }
-                GraphCanvas g5 = new GraphCanvas(map, "Humidity for " + today, "%");
+                GraphCanvas g5 = new GraphCanvas(map, "Humidity for " + today, "%", timeStrings[timePeriod]);
                
                 map = new TreeSet<ConditionPoint>();
                 if(points != null)
@@ -167,7 +203,7 @@ public class GraphWindow extends JFrame {
                     for( Conditions current : points )
                     {
                         c.setTime(current.getDay());
-                        int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / 23;
+                        int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / divisor;
                         x += c.get(Calendar.MINUTE) / 2;
                         
                         float max = (Float)data.get(DataCalculator.MAX_UV);
@@ -178,7 +214,7 @@ public class GraphWindow extends JFrame {
                         map.add(p);
                     }
                 }
-                GraphCanvas g6 = new GraphCanvas(map, "UV Index for " + today, "");
+                GraphCanvas g6 = new GraphCanvas(map, "UV Index for " + today, "", timeStrings[timePeriod]);
                 
 		// A special informational pane.
 		InfoPane pane = new InfoPane();

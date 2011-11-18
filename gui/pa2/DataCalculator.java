@@ -247,7 +247,7 @@ public class DataCalculator {
         	map.put(AVG_UV, uvSum / uvCount);
         }
         else map.put(AVG_UV, "N/A");
-        map.put(MAX_UV, new Float(maxHum));
+        map.put(MAX_UV, new Float(maxUV));
         map.put(MIN_UV, new Float(minUV));
         
         return map;

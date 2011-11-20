@@ -181,10 +181,13 @@ public class DataCalculator {
             		minUV = current.getUv();
             	}
             }
-                       
-            int dir = windDirCount.get( current.getWindAngle().trim() );
-            ++dir;
-            windDirCount.put(current.getWindAngle().trim(), dir);
+                     
+            if( current.getWindAngle() != Conditions.INVALID_DIRECTION)
+            {
+                int dir = windDirCount.get( current.getWindAngle().trim() );
+                ++dir;
+                windDirCount.put(current.getWindAngle().trim(), dir);
+            }
         }
         
         int maxCount = 0;

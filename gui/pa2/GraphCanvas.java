@@ -13,7 +13,7 @@ public class GraphCanvas extends Canvas {
 	private String title;
     private String timeUnits;
 	private Point pt;
-	private float numDivs;
+        private int increment;
 	
 	public TreeSet<ConditionPoint> getMap()
 	{
@@ -30,13 +30,14 @@ public class GraphCanvas extends Canvas {
 		pt = p;
 	}
 	
-	public GraphCanvas(TreeSet<ConditionPoint> points, String title, String unit, String timeUnits, float numDivs)
+	public GraphCanvas(TreeSet<ConditionPoint> points, String title, String unit, String timeUnits, int increment)
 	{
 		super();
 		this.map = points;
 		this.title = title;
-        this.timeUnits = timeUnits;
-        this.numDivs = numDivs;
+		units = unit;
+                this.timeUnits = timeUnits;
+                this.increment = increment;
 		pt = new Point(0,0);
 		relativeMap = new Vector<ConditionPoint>();
 	}
@@ -67,7 +68,7 @@ public class GraphCanvas extends Canvas {
 		
 		// Draw the x-axis
 		g.drawLine(35, getSize().height - 45, getSize().width - 35, getSize().height - 45);
-		for(int i = 0; i <= numDivs; ++i)
+		for(int i = 0; i < increment; ++i)
 		{
 			int x = (int)(i / (numDivs) * (width - 70) ) + 35;
 			g.drawString(""+i, x, height - 25);

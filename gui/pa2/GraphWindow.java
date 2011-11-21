@@ -2,7 +2,6 @@ package gui.pa2;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.util.*;
 
 import javax.swing.*;
@@ -10,18 +9,18 @@ import javax.swing.*;
 @SuppressWarnings("serial")
 public class GraphWindow extends JFrame {
 	
+
+    public final static int DAY = 0;
+    public final static int WEEK = 1;
+    public final static int MONTH = 2;
+    public final static int YEAR = 3;
+    private String[] timeStrings = {"Hour", "Day", "Day", "Day"};
     
-        public final static int DAY = 0;
-        public final static int WEEK = 1;
-        public final static int MONTH = 2;
-        public final static int YEAR = 3;
-        private String[] timeStrings = {"Hour", "Day", "Day", "Day"};
-        
-        
-        public GraphWindow(Vector<Conditions> in_pts, String today)
-        {
-            this( in_pts, today, GraphWindow.DAY);
-        }
+    
+    public GraphWindow(Vector<Conditions> in_pts, String today)
+    {
+        this( in_pts, today, GraphWindow.DAY);
+    }
 	/**
 	 * Creates a new daily graph window from the given set of conditions and day.
 	 * The day should be passed in as a string in the format it should appear on
@@ -46,7 +45,8 @@ public class GraphWindow extends JFrame {
 		DataCalculator d = new DataCalculator(points);
 		TreeMap<String, Object> data = d.computeData();
                 
-                int divisor = 1;
+        int divisor = 23;
+        int numerator = Calendar.HOUR_OF_DAY;
                 
                 
 		// Trying to do some basic sanity testing; caller should NOT pass in a null vector.
@@ -56,25 +56,25 @@ public class GraphWindow extends JFrame {
 			// Since we used the date class for the Conditions, we need a calendar to properly access its elements.
 			Calendar c = Calendar.getInstance();
 
-                        switch( timePeriod )
-                        {
-                            case 0:
-                                divisor = 23;
-                                break;
-                            case 1:
-                                divisor = 7;
-                                break;
-                            case 2:
-                                Conditions first = points.firstElement();
-                                c.setTime(first.getDay());
-                                divisor = c.getActualMaximum(c.DAY_OF_MONTH);
-                                break;
-                            case 3:
-                                first = points.firstElement();
-                                c.setTime(first.getDay());
-                                divisor = c.getActualMaximum(c.DAY_OF_YEAR);
-                                break;
-                        }
+            switch( timePeriod )
+            {
+                case WEEK:
+                	numerator = Calendar.DAY_OF_WEEK;
+                    divisor = 7;
+                    break;
+                case MONTH:
+                	numerator = Calendar.DAY_OF_MONTH;
+                    Conditions first = points.firstElement();
+                    c.setTime(first.getDay());
+                    divisor = c.getActualMaximum(Calendar.DAY_OF_MONTH);
+                    break;
+                case YEAR:
+                	numerator = Calendar.MONTH;
+                    first = points.firstElement();
+                    c.setTime(first.getDay());
+                    divisor = c.getActualMaximum(Calendar.MONTH);
+                    break;
+            }
                         
 			// For each Conditions called current in the collection points
 			for(Conditions current : points)
@@ -88,8 +88,9 @@ public class GraphWindow extends JFrame {
 					 * The entire thing uses a fixed-point system; I don't like to use floats or doubles unless it's
 					 * a scientific program that can be +/-.0001, since FPUs are terribly imprecise. 
 					 */
-					int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / divisor;
-					x += c.get(Calendar.MINUTE) / 2;
+					int x = c.get(numerator) * 1000 / divisor;
+					if(timePeriod == DAY)
+						x += c.get(Calendar.MINUTE) / 2;
 					/* The y value should also be a fixed-point proportion. 15 is used as a baseline right now, but in the
 					 * future we may adjust this so it is proportional to the difference in the min and max values for
 					 * the data set.
@@ -106,7 +107,7 @@ public class GraphWindow extends JFrame {
 		}
 		
 		// Create a graph canvas from the formatted data.
-		GraphCanvas g1 = new GraphCanvas(map, "Rainfall for " + today, "Inches", timeStrings[timePeriod]);
+		GraphCanvas g1 = new GraphCanvas(map, "Rainfall for " + today, "Inches", timeStrings[timePeriod], new Float(divisor));
 		
 		// again, a minor sanity check.
 		if(map != null) map = new TreeSet<ConditionPoint>();
@@ -118,8 +119,9 @@ public class GraphWindow extends JFrame {
 			{
 				// See above about proportions and using fixed vs. floating point.
 				c.setTime(current.getDay());
-				int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / divisor;
-				x += c.get(Calendar.MINUTE) / 2;
+				int x = c.get(numerator) * 1000 / divisor;
+				if(timePeriod == DAY)
+					x += c.get(Calendar.MINUTE) / 2;
 				float max = (Float)data.get(DataCalculator.MAX_PRESSURE);
 				float min = (Float)data.get(DataCalculator.MIN_PRESSURE);
 				// Barometric pressure rarely, if ever, gets above 40 in Hg, and is rarely less than 25 in Hg.
@@ -129,7 +131,7 @@ public class GraphWindow extends JFrame {
 			}
 		}
 		// Separate variable, because we need to graph these pieces in the group window separately.
-		GraphCanvas g2 = new GraphCanvas(map, "Barometric Pressure for " + today, "Inches Hg", timeStrings[timePeriod]);
+		GraphCanvas g2 = new GraphCanvas(map, "Barometric Pressure for " + today, "Inches Hg", timeStrings[timePeriod], divisor);
 		
 		map = new TreeSet<ConditionPoint>();
 		if(points != null)
@@ -140,8 +142,9 @@ public class GraphWindow extends JFrame {
 			{
 				// See above about proportions and using fixed vs. floating point.
 				c.setTime(current.getDay());
-				int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / divisor;
-				x += c.get(Calendar.MINUTE) / 2;
+				int x = c.get(numerator) * 1000 / divisor;
+				if(timePeriod == DAY)
+					x += c.get(Calendar.MINUTE) / 2;
 				float max = (Float)data.get(DataCalculator.MAX_TEMP);
 				float min = (Float)data.get(DataCalculator.MIN_TEMP);
 				int y = (int)((current.getTemperature() - min) / (max - min) * 500);
@@ -149,87 +152,82 @@ public class GraphWindow extends JFrame {
 				map.add(p);
 			}
 		}
-		GraphCanvas g3 = new GraphCanvas(map, "Temperature for " + today, "Degrees F", timeStrings[timePeriod]);
+		GraphCanvas g3 = new GraphCanvas(map, "Temperature for " + today, "Degrees F", timeStrings[timePeriod], divisor);
 		
+        
+        map = new TreeSet<ConditionPoint>();
+        if(points != null)
+        {
+            Calendar c = Calendar.getInstance();
+            
+            for( Conditions current : points )
+            {
                 
-                map = new TreeSet<ConditionPoint>();
-                if(points != null)
-                {
-                    Calendar c = Calendar.getInstance();
-                    
-                    for( Conditions current : points )
-                    {
-                        
-                        c.setTime(current.getDay());
-                        int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / divisor;
-                        x += c.get(Calendar.MINUTE) / 2;
-
-                        float max = (Float)data.get(DataCalculator.MAX_WIND);
-                        int y = (int)(current.getWind() / max * 500);
-                        
-                        ConditionPoint p = new ConditionPoint(x, y, current);
-                        map.add(p);
-                    }
-                    
-                }
-                GraphCanvas g4 = new GraphCanvas(map,"Wind Speed for " + today, "MPH", timeStrings[timePeriod]);
+                c.setTime(current.getDay());
+				int x = c.get(numerator) * 1000 / divisor;
+				if(timePeriod == DAY)
+					x += c.get(Calendar.MINUTE) / 2;
+                float max = (Float)data.get(DataCalculator.MAX_WIND);
+                int y = (int)(current.getWind() / max * 500);
                 
-                map = new TreeSet<ConditionPoint>();
-                if(points != null)
-                {
-                    Calendar c = Calendar.getInstance();
-                    
-                    for( Conditions current : points )
-                    {
-                        c.setTime(current.getDay());
-                        int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / divisor;
-                        x += c.get(Calendar.MINUTE) / 2;
-                        
-                        double max = (Double)data.get(DataCalculator.MAX_HUM);
-                        double min = (Double)data.get(DataCalculator.MIN_HUM);
-                        int y = (int)((current.getHumidity() - min) / (max - min) * 500);
-                        
-                        ConditionPoint p = new ConditionPoint(x, y, current);
-                        map.add(p);
-                    }
-                }
-                GraphCanvas g5 = new GraphCanvas(map, "Humidity for " + today, "%", timeStrings[timePeriod]);
-               
-                map = new TreeSet<ConditionPoint>();
-                if(points != null)
-                {
-                    Calendar c = Calendar.getInstance();
-                    
-                    for( Conditions current : points )
-                    {
-                        c.setTime(current.getDay());
-                        int x = c.get(Calendar.HOUR_OF_DAY) * 1000 / divisor;
-                        x += c.get(Calendar.MINUTE) / 2;
-                        
-                        float max = (Float)data.get(DataCalculator.MAX_UV);
-                        float min = (Float)data.get(DataCalculator.MIN_UV);
-                        int y = (int)((current.getUv() - min) / (max - min) * 500);
-                        
-                        ConditionPoint p = new ConditionPoint(x, y, current);
-                        map.add(p);
-                    }
-                }
-                GraphCanvas g6 = new GraphCanvas(map, "UV Index for " + today, "", timeStrings[timePeriod]);
+                ConditionPoint p = new ConditionPoint(x, y, current);
+                map.add(p);
+            }
+            
+        }
+        GraphCanvas g4 = new GraphCanvas(map,"Wind Speed for " + today, "MPH", timeStrings[timePeriod], divisor);
+        
+        map = new TreeSet<ConditionPoint>();
+        if(points != null)
+        {
+            Calendar c = Calendar.getInstance();
+            
+            for( Conditions current : points )
+            {
+                c.setTime(current.getDay());
+				int x = c.get(numerator) * 1000 / divisor;
+				if(timePeriod == DAY)
+					x += c.get(Calendar.MINUTE) / 2;
+                double max = (Double)data.get(DataCalculator.MAX_HUM);
+                double min = (Double)data.get(DataCalculator.MIN_HUM);
+                int y = (int)((current.getHumidity() - min) / (max - min) * 500);
+                
+                ConditionPoint p = new ConditionPoint(x, y, current);
+                map.add(p);
+            }
+        }
+        GraphCanvas g5 = new GraphCanvas(map, "Humidity for " + today, "%", timeStrings[timePeriod], divisor);
+       
+        map = new TreeSet<ConditionPoint>();
+        if(points != null)
+        {
+            Calendar c = Calendar.getInstance();
+            
+            for( Conditions current : points )
+            {
+                c.setTime(current.getDay());
+				int x = c.get(numerator) * 1000 / divisor;
+				if(timePeriod == DAY)
+					x += c.get(Calendar.MINUTE) / 2;
+                float max = (Float)data.get(DataCalculator.MAX_UV);
+                float min = (Float)data.get(DataCalculator.MIN_UV);
+                int y = (int)((current.getUv() - min) / (max - min) * 500);
+                
+                ConditionPoint p = new ConditionPoint(x, y, current);
+                map.add(p);
+            }
+        }
+        GraphCanvas g6 = new GraphCanvas(map, "UV Index for " + today, "", timeStrings[timePeriod], divisor);
                 
 		// A special informational pane.
 		InfoPane pane = new InfoPane();
 		pane.setSize(new java.awt.Dimension(100,100));
-                g6.addMouseListener(new PointClick(pane));                
-                g5.addMouseListener(new PointClick(pane));
-                g4.addMouseListener(new PointClick(pane));
-		g3.addMouseListener(new PointClick(pane));
+        g6.addMouseListener(new PointClick(pane));                
+        g5.addMouseListener(new PointClick(pane));
+        g4.addMouseListener(new PointClick(pane));
+        g3.addMouseListener(new PointClick(pane));
 		g2.addMouseListener(new PointClick(pane));
 		g1.addMouseListener(new PointClick(pane));
-		/*
-		g1.addMouseMotionListener(new PointFollow(pane));
-		g2.addMouseMotionListener(new PointFollow(pane));
-		g3.addMouseMotionListener(new PointFollow(pane));
-		*/
 		
 		// A series of JLabels will contain the relevant data.
 		JLabel[] dataValues = new JLabel[data.size()];
@@ -303,28 +301,6 @@ public class GraphWindow extends JFrame {
 		
 	}
 	
-	private class PointFollow implements MouseMotionListener
-	{
-		public PointFollow(InfoPane pane)
-		{
-	//		target = pane;
-		}
-		@Override
-		public void mouseDragged(MouseEvent arg0) {
-			// TODO Auto-generated method stub
-			
-		}
-		
-		public void mouseMoved(MouseEvent arg0) 
-		{
-//			int x = arg0.getX();
-//			int y = arg0.getY();
-//			GraphCanvas c = (GraphCanvas)arg0.getSource();
-//			c.setPoint(new java.awt.Point(x,y));
-//			c.repaint();
-		}
-	}
-	
 	private class PointClick implements MouseListener
 	{
 		private InfoPane target;
@@ -349,7 +325,6 @@ public class GraphWindow extends JFrame {
 			    while(it.hasNext() && cont)
 			    {
 			    	holder = it.next();
-			    	if(Math.abs( holder.compareTo(pt) ) < 5 ) System.out.println(Math.abs( holder.compareTo(pt)));
 			    	if( Math.abs( holder.compareTo(pt) )  < 5)
 			    	{
 			    		cont = false;
@@ -363,29 +338,20 @@ public class GraphWindow extends JFrame {
 			}
 		}
 
-		public void mouseEntered(MouseEvent arg0) {
-//			int x = arg0.getX();
-//			int y = arg0.getY();
-//			GraphCanvas c = (GraphCanvas)arg0.getSource();
-//			c.setPoint(new java.awt.Point(x,y));
-//			c.repaint();
+		public void mouseEntered(MouseEvent arg0) 
+		{
 		}
 
 		public void mouseExited(MouseEvent arg0) 
 		{
-			GraphCanvas c = (GraphCanvas)arg0.getSource();
-			c.setPoint(new java.awt.Point(0,0));
-			c.repaint();
 		}
 
-		public void mousePressed(MouseEvent arg0) {
-			// TODO Auto-generated method stub
-			
+		public void mousePressed(MouseEvent arg0) 
+		{
 		}
 
-		public void mouseReleased(MouseEvent arg0) {
-			// TODO Auto-generated method stub
-			
+		public void mouseReleased(MouseEvent arg0) 
+		{
 		}
 		
 	}

@@ -24,7 +24,8 @@ public class XMLParser
         filename = name;
     }
     
-    public Vector<Conditions> parse()
+    @SuppressWarnings("unchecked")
+	public Vector<Conditions> parse()
     {
     		Vector<Conditions> conditions = new Vector<Conditions>();
     		SAXBuilder builder = new SAXBuilder();
@@ -32,14 +33,14 @@ public class XMLParser
     		{
     				Document document = builder.build(filename);
     				Element root = document.getRootElement();
-    				List children = root.getChildren("weather");
-    				Iterator i = children.iterator();
+    				List<org.jdom.Element> children = root.getChildren("weather");
+    				Iterator<org.jdom.Element> i = children.iterator();
     				Calendar c = Calendar.getInstance();
     				
     				while( i.hasNext() )
     				{
     						Conditions temp = new Conditions();
-    						Element child = ( Element ) i.next();
+    						Element child = i.next();
     						Element condition = child.getChild("temperature");
     						String datestring = "";
     						

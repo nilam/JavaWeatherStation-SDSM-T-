@@ -182,9 +182,12 @@ public class DataCalculator {
             	}
             }
                        
-            int dir = windDirCount.get( current.getWindAngle().trim() );
-            ++dir;
-            windDirCount.put(current.getWindAngle().trim(), dir);
+            if(current.getWindAngle() != Conditions.INVALID_DIRECTION)
+            {
+	            int dir = windDirCount.get( current.getWindAngle().trim() );
+	            ++dir;
+	            windDirCount.put(current.getWindAngle().trim(), dir);
+            }
         }
         
         int maxCount = 0;
@@ -211,7 +214,7 @@ public class DataCalculator {
         
         map.put("     Temperature", "-------------");
         if(tempCount > 0)
-        	map.put( AVG_TEMP, new Float( TempSum / tempCount ) );
+        	map.put( AVG_TEMP, new Float( TempSum / tempCount * 100 ) );
         else
         	map.put( AVG_TEMP, "N/A");
         map.put( MAX_TEMP, new Float( maxTemp) );

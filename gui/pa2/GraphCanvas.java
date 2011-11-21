@@ -11,9 +11,9 @@ public class GraphCanvas extends Canvas {
 	private Vector<ConditionPoint> relativeMap;
 	// The title of the graph.
 	private String title;
-	private String units;
-        private String timeUnits;
+    private String timeUnits;
 	private Point pt;
+	private float numDivs;
 	
 	public TreeSet<ConditionPoint> getMap()
 	{
@@ -30,13 +30,13 @@ public class GraphCanvas extends Canvas {
 		pt = p;
 	}
 	
-	public GraphCanvas(TreeSet<ConditionPoint> points, String title, String unit, String timeUnits)
+	public GraphCanvas(TreeSet<ConditionPoint> points, String title, String unit, String timeUnits, float numDivs)
 	{
 		super();
 		this.map = points;
 		this.title = title;
-		units = unit;
-                this.timeUnits = timeUnits;
+        this.timeUnits = timeUnits;
+        this.numDivs = numDivs;
 		pt = new Point(0,0);
 		relativeMap = new Vector<ConditionPoint>();
 	}
@@ -50,7 +50,7 @@ public class GraphCanvas extends Canvas {
 		//g.setColor(new Color(0xCC, 0xCC, 0xFF));
 		//g.fillRect(0, 0, getSize().width, getSize().height);
 
-		/*
+		/* Sets the background to a gradient. Pretty, but makes the redraw really slow.
 		for(int i = 0; i < height / 10 + 10; ++i)
 		{
 			g.setColor(new Color(0xCC - 3 * i, 0xCC - 3 * i, 0xFF - 3 * i) );
@@ -67,9 +67,9 @@ public class GraphCanvas extends Canvas {
 		
 		// Draw the x-axis
 		g.drawLine(35, getSize().height - 45, getSize().width - 35, getSize().height - 45);
-		for(int i = 0; i < 24; ++i)
+		for(int i = 0; i <= numDivs; ++i)
 		{
-			int x = (int)(i / 23.0 * (width - 70) ) + 35;
+			int x = (int)(i / (numDivs) * (width - 70) ) + 35;
 			g.drawString(""+i, x, height - 25);
 		}
 		//g.drawString(units, width / 2, height - 5);
@@ -94,8 +94,10 @@ public class GraphCanvas extends Canvas {
 			
 			ConditionPoint now = points.next();
 			if(relativeMap != null) relativeMap = new Vector<ConditionPoint>();
+
+			// Graph the points.
 			if(points.hasNext())
-			do
+			while (points.hasNext())
 			{
 				int ax = now.getX();
 				int ay = now.getY();
@@ -103,21 +105,20 @@ public class GraphCanvas extends Canvas {
 				int bx = net.getX();
 				int by = net.getY();
 				ax = (int)(ax / 1000.0 * (width - 75) + 35);
-				ay = height - (int)( (ay / 1000.00 * height) ) - 45;
+				ay = height - (int)( ay / 1000.00 * height) - 45;
 				bx = (int)(bx / 1000.0 * (width - 75) + 35);
 				by = height - (int)( by / 1000.0 * height) - 45;
 				g.drawLine(ax, ay, bx, by);
 				g.fillOval(ax, ay, 3, 3);
 				relativeMap.add( new ConditionPoint( ax, ay, now.getData() ) );
 				now = net;
-			}while (points.hasNext());
-			else
-			{
-				int ax = now.getX();
-				int ay = now.getY();
-				ax = (int)(ax/1000.0 * (width - 75) + 35);
-				g.fillRect(ax, ay, 3, 3);
 			}
+			int ax = now.getX();
+			int ay = now.getY();
+			ax = (int)(ax/1000.0 * (width - 75) + 35);
+			g.fillRect(ax, ay, 3, 3);
+			relativeMap.add( new ConditionPoint( ax, ay, now.getData()) );
+		
 			if(pt.x != 0 && pt.y != 0)
 			{
 				ConditionPoint mouse = new ConditionPoint(pt.x, pt.y, new Conditions());

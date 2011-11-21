@@ -2,7 +2,6 @@ package gui.pa2;
 
 import java.awt.Button;
 import javax.swing.*;
-
 import java.awt.FlowLayout;
 import java.awt.GraphicsConfiguration;
 import java.awt.HeadlessException;
@@ -15,28 +14,32 @@ import java.io.File;
 import java.util.*;
 
 import javax.swing.JFrame;
+import javax.swing.event.TreeSelectionEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeSelectionModel;
 
 @SuppressWarnings("serial")
 public class SelectionWindow extends JFrame {
-
+	
 	private Vector<Conditions> points;
 	private TreeMap<String, Vector<Conditions>> map;
 	private String day;
-	private JTree tree;
-	private JScrollPane scrollPane;
-	private TreeMap<String, TreeMap<String, TreeMap<String, ArrayList<String>>>> yearMonthWeekDay;
+	private TreeMap<String, TreeMap<String, TreeMap<String, ArrayList<String> > > > lists;
+	private JTree panel;
+	private int graph;
 
 	public SelectionWindow() throws HeadlessException {
 		super();
 		points = null;
 		map = new TreeMap<String, Vector<Conditions>>();
 		day = null;
-		yearMonthWeekDay = new TreeMap<String, TreeMap<String, TreeMap<String, ArrayList<String>>>>();
-		DefaultMutableTreeNode rootnode = new DefaultMutableTreeNode(
-				"No Days Selected");
-		tree = new JTree(rootnode);
-
+		graph = GraphWindow.DAY;
+		lists = new TreeMap<String, TreeMap<String, TreeMap<String, ArrayList<String> > > >();
+		panel = new JTree( new DefaultMutableTreeNode("No data entered.") );
+		panel.addTreeSelectionListener(new listChooser(this));
+		panel.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		
 		// Menu bar initialization
 		MenuBar bar = new MenuBar();
 		Menu m = new Menu("File");
@@ -53,29 +56,35 @@ public class SelectionWindow extends JFrame {
 		m.add(i);
 		bar.add(m);
 		setMenuBar(bar);
-
+		
 		// Content
-		getContentPane().setLayout(new FlowLayout());
+		JPanel left = new JPanel();
+		BoxLayout bl = new BoxLayout(left, BoxLayout.Y_AXIS);
+		left.setLayout(bl);
 		Button tempButton = new Button("Graph the interval");
 		tempButton.addActionListener(new GraphAction(this));
-		getContentPane().add(tempButton);
+		left.add(tempButton);
 		tempButton = new Button("Show various controls");
 		tempButton.addActionListener(new DialAction());
-		getContentPane().add(tempButton);
-		scrollPane = new JScrollPane(tree);
-		getContentPane().add(scrollPane);
-
+		left.add(tempButton);
+		left.add(new JScrollPane(panel));
+		
+		getContentPane().setLayout(new FlowLayout());
+		getContentPane().add(left);
 		// Pack it all in.
 		pack();
 	}
-
+	
 	public void updateMap()
 	{
-		for(Conditions current : points)
+		Vector<Conditions> parse = new Vector<Conditions>(points);
+		for(Conditions current : parse)
 		{
 			Calendar c = Calendar.getInstance();
 			c.setTime(current.getDay());
-			day = c.get(Calendar.DAY_OF_MONTH) + " of " + c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US) + ", " + c.get(Calendar.YEAR);
+			day = c.get(Calendar.DAY_OF_MONTH) + " "
+				+ c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US) + ", " 
+				+ c.get(Calendar.YEAR);
 			if(map.containsKey(day))
 			{
 				map.get(day).add(current);
@@ -86,170 +95,359 @@ public class SelectionWindow extends JFrame {
 				vec.add(current);
 				map.put(day, vec);
 			}
-			// First, check to see if the year is in the map.
-			if(yearMonthWeekDay.isEmpty() || !yearMonthWeekDay.containsKey("" + c.get(Calendar.YEAR)) )
-			{
-				// It's not. Add Month, Week and Day to year.
-				TreeMap<String, TreeMap<String,ArrayList<String>>> monthWeekDay = new TreeMap<String, TreeMap<String,ArrayList<String>>>(); 
-				TreeMap<String, ArrayList<String>> weekDay = new TreeMap<String, ArrayList<String>>();
-				ArrayList<String> day = new ArrayList<String>();
-				day.add("" + c.get(Calendar.DAY_OF_MONTH) + " of " + c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US) + ", " + c.get(Calendar.YEAR));
-				weekDay.put("Week " + c.get(Calendar.WEEK_OF_MONTH), day);
-				monthWeekDay.put("" + c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US),weekDay);
-				yearMonthWeekDay.put("" + c.get(Calendar.YEAR),monthWeekDay);
-			}
-			// Found the year. Is the Month already here?
-			else if(!yearMonthWeekDay.get("" + c.get(Calendar.YEAR)).containsKey("" + c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US)))
-			{
-				// No. Add the week and day to the month, then add the month.
-				TreeMap<String, ArrayList<String>> weekDay = new TreeMap<String, ArrayList<String>>();
-				ArrayList<String> day = new ArrayList<String>();
-				day.add("" + c.get(Calendar.DAY_OF_MONTH) + " of " + c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US) + ", " + c.get(Calendar.YEAR));
-				weekDay.put("Week " + c.get(Calendar.WEEK_OF_MONTH), day);
-				yearMonthWeekDay.get("" + c.get(Calendar.YEAR)).put("" + c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US),weekDay);
-			}
-			// Found year and month. Is the week here?
-			else if(!yearMonthWeekDay.get("" + c.get(Calendar.YEAR)).get(""+ c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US)).containsKey("" + c.getDisplayName(Calendar.WEEK_OF_MONTH, Calendar.SHORT, Locale.US)))
-			{
-				// No week. Add the week to Year and Month.
-				ArrayList<String> day = new ArrayList<String>();
-				day.add("" + c.get(Calendar.DAY_OF_MONTH) + " of " + c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US) + ", " + c.get(Calendar.YEAR));
-				yearMonthWeekDay.get("" + c.get(Calendar.YEAR)).get("" + c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US)).put("Week " + c.get(Calendar.WEEK_OF_MONTH),day);
-			}
-			else
-			{
-				yearMonthWeekDay.get("" + c.get(Calendar.YEAR)).get("" + c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US)).get("" + c.get(Calendar.WEEK_OF_MONTH)).add("" + c.get(Calendar.DAY_OF_MONTH) + " of " + c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US) + ", " + c.get(Calendar.YEAR));
-			
-			}
-		}
-		setPoints(new Vector<Conditions>(map.get(day)));
 
-		DefaultMutableTreeNode newtroad = new DefaultMutableTreeNode();
-		for( Map.Entry<String, TreeMap<String, TreeMap<String, ArrayList <String>>>> y : yearMonthWeekDay.entrySet())
-		{
-			DefaultMutableTreeNode Year = new DefaultMutableTreeNode(y.getKey());
-			for( Map.Entry<String, TreeMap<String, ArrayList <String>>> m : y.getValue().entrySet())
+			String year = "" + c.get(Calendar.YEAR);
+			String month = c.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US) + ", " + year;
+			String week = "Week " + c.get(Calendar.WEEK_OF_MONTH) + ", " + month;
+			
+			// If the list is empty or we're adding a new year, we need to add ALL of the maps along the way.
+			if( lists.isEmpty() || !lists.containsKey(year))
 			{
-				DefaultMutableTreeNode Month = new DefaultMutableTreeNode(m.getKey()); 
-				for(Map.Entry<String, ArrayList <String>> w : m.getValue().entrySet())
-				{
-					DefaultMutableTreeNode Week = new DefaultMutableTreeNode(w.getKey());
-					for(String d : w.getValue())
-					{
-						DefaultMutableTreeNode Day = new DefaultMutableTreeNode(d);
-						Week.add(Day);
-					}
-					Month.add(Week);
-				}
-				Year.add(Month);
+				TreeMap<String, TreeMap<String, ArrayList<String> > > monthMap = new TreeMap<String, TreeMap<String, ArrayList<String> > >();
+				TreeMap<String, ArrayList<String> > weekMap = new TreeMap<String, ArrayList<String> >();
+				ArrayList<String> days = new ArrayList<String>();
+				days.add(day);
+				weekMap.put(week, days);
+				monthMap.put(month, weekMap);
+				lists.put(year, monthMap);
 			}
-			newtroad.add(Year);
+			else if(!lists.get(year).containsKey(month))
+			{ 
+				// If we're adding a new month to an existing year, there's less to allocate.
+				TreeMap<String, ArrayList<String> > weekMap = new TreeMap<String, ArrayList<String> >();
+				ArrayList<String> days = new ArrayList<String>();
+				days.add(day);
+				weekMap.put(week, days);
+				lists.get(year).put(month, weekMap);
+			}
+			else if(!lists.get(year).get(month).containsKey(week))
+			{
+				// If we're adding a new week to an existing month, there's only the week to allocate.
+				ArrayList<String> days = new ArrayList<String>();
+				days.add(day);
+				lists.get(year).get(month).put(week, days);
+			}
+			else if(!lists.get(year).get(month).get(week).contains(day))
+			{
+				lists.get(year).get(month).get(week).add(day);
+			}
+			
 		}
-		JViewport port = new JViewport();
-		port.setView(new JTree(newtroad));
-		scrollPane.setViewport(port);
+		
+		// newtRoad is actually a pun based off my inability to say "Root Node" six times in a row.
+		DefaultMutableTreeNode newtRoad = new DefaultMutableTreeNode();
+		// For each year in the lists...
+		for(Map.Entry<String, TreeMap<String, TreeMap<String, ArrayList<String> > > > y : lists.entrySet())
+		{
+			// Create a new node for the year.
+			DefaultMutableTreeNode yearNode = new DefaultMutableTreeNode(y.getKey());
+			// For each month in the current year...
+			for(Map.Entry<String, TreeMap<String, ArrayList<String> >  > m : lists.get(y.getKey()).entrySet())
+			{
+				// Create a new node for the month.
+				DefaultMutableTreeNode monthNode = new DefaultMutableTreeNode(m.getKey());
+				// For each week in the month...
+				for(Map.Entry<String, ArrayList<String> > w : lists.get(y.getKey()).get(m.getKey()).entrySet())
+				{
+					DefaultMutableTreeNode weekNode = new DefaultMutableTreeNode(w.getKey());
+					for(String current : lists.get(y.getKey()).get(m.getKey()).get(w.getKey()))
+					{
+						weekNode.add(new DefaultMutableTreeNode(current));
+					}
+					monthNode.add(weekNode);
+				}
+				yearNode.add(monthNode);
+			}
+			newtRoad.add(yearNode);
+		}
+		DefaultTreeModel model = new DefaultTreeModel(newtRoad);
+		panel.setModel(model);
+		
+		setPoints(new Vector<Conditions>(map.get(day)));
 		repaint();
 	}
-
-	public void setPoints(Vector<Conditions> points) {
+	
+	public void setPoints(Vector<Conditions> points)
+	{
 		this.points = points;
 	}
-
-	public Vector<Conditions> getPoints() {
+	
+	public Vector<Conditions> getPoints()
+	{
+		if(day == null || points == null || map == null || day.isEmpty() || map.isEmpty())
+				return null;
+		else if(graph == GraphWindow.DAY)
+		{
+			points = map.get(day);
+		}
+		else if(graph == GraphWindow.WEEK)
+		{
+			points = new Vector<Conditions>();
+			String tiers[] = day.split(", ");
+			for(String today : lists.get(tiers[2]).
+					get(tiers[1] + ", " + tiers[2]).
+					get(tiers[0] + ", " + tiers[1] + ", " + tiers[2]))
+			{
+				// For each day in the week, get the conditions that make up the day.
+				Vector<Conditions> temp = map.get(today);
+				// Run our data compositor on it.
+				DataCalculator dc = new DataCalculator(new Vector<Conditions>(temp));
+				TreeMap<String, Object> results = dc.computeData();
+				Conditions point = new Conditions(
+						(Float)results.get(DataCalculator.AVG_TEMP),
+						(Float)results.get(DataCalculator.AVG_PRESSURE),
+						(Float)results.get(DataCalculator.AVG_HUM),
+						new Float((Double)results.get(DataCalculator.AVG_UV)),
+						(Float)results.get(DataCalculator.TOTAL_RAIN),
+						(Float)results.get(DataCalculator.AVG_WIND),
+						(String)results.get(DataCalculator.WIND_DIR),
+						temp.get(0).getDay());
+				points.add(point);
+			}
+		}
+		else if(graph == GraphWindow.MONTH)
+		{
+			points = new Vector<Conditions>();
+			String tiers[] = day.split(", ");
+			for(Map.Entry<String, ArrayList<String> >week : lists.get(tiers[1]).
+					get(tiers[0] + ", " + tiers[1]).entrySet())
+			{
+				for(String today : week.getValue())
+				{
+					// For each day in the week, get the conditions that make up the day.
+					Vector<Conditions> temp = map.get(today);
+					// Run our data compositor on it.
+					DataCalculator dc = new DataCalculator(new Vector<Conditions>(temp));
+					TreeMap<String, Object> results = dc.computeData();
+					Conditions point = new Conditions(
+							(Float)results.get(DataCalculator.AVG_TEMP),
+							(Float)results.get(DataCalculator.AVG_PRESSURE),
+							(Float)results.get(DataCalculator.AVG_HUM),
+							new Float((Double)results.get(DataCalculator.AVG_UV)),
+							(Float)results.get(DataCalculator.TOTAL_RAIN),
+							(Float)results.get(DataCalculator.AVG_WIND),
+							(String)results.get(DataCalculator.WIND_DIR),
+							temp.get(0).getDay());
+					points.add(point);
+				}
+			}
+		}
+		else if(graph == GraphWindow.YEAR)
+		{
+			points = new Vector<Conditions>();
+			// For each month in the year we're iterating through
+			for(Map.Entry<String, TreeMap<String, ArrayList<String> > > m : lists.get(day).entrySet())
+			{
+				// Get a full month's worth of data, and add it to its own vector.
+				Vector<Conditions> month = new Vector<Conditions>();
+				for(Map.Entry<String, ArrayList<String> >week : m.getValue().entrySet())
+				{
+					for(String today : week.getValue())
+					{
+						// For each day in the week, get the conditions that make up the day.
+						Vector<Conditions> temp = map.get(today);
+						// Run our data compositor on it.
+						DataCalculator dc = new DataCalculator(new Vector<Conditions>(temp));
+						TreeMap<String, Object> results = dc.computeData();
+						Conditions point = new Conditions(
+								(Float)results.get(DataCalculator.AVG_TEMP),
+								(Float)results.get(DataCalculator.AVG_PRESSURE),
+								(Float)results.get(DataCalculator.AVG_HUM),
+								new Float((Double)results.get(DataCalculator.AVG_UV)),
+								(Float)results.get(DataCalculator.TOTAL_RAIN),
+								(Float)results.get(DataCalculator.AVG_WIND),
+								(String)results.get(DataCalculator.WIND_DIR),
+								temp.get(0).getDay());
+						month.add(point);
+					}
+				}
+				// Composite the entire month into its own data point.
+				DataCalculator dc = new DataCalculator(new Vector<Conditions>(month));
+				TreeMap<String, Object> results = dc.computeData();
+				Conditions point = new Conditions(
+						(Float)results.get(DataCalculator.AVG_TEMP),
+						(Float)results.get(DataCalculator.AVG_PRESSURE),
+						(Float)results.get(DataCalculator.AVG_HUM),
+						new Float((Double)results.get(DataCalculator.AVG_UV)),
+						(Float)results.get(DataCalculator.TOTAL_RAIN),
+						(Float)results.get(DataCalculator.AVG_WIND),
+						(String)results.get(DataCalculator.WIND_DIR),
+						month.get(0).getDay());
+				points.add(point);
+			}
+		}
 		return points;
 	}
-
-	public String getDay() {
+	
+	public String getDay()
+	{
 		return day;
 	}
-
-	private static class About implements ActionListener {
+	
+	public void setDay(String newDay)
+	{
+		day = newDay;
+	}
+	
+	private static class About implements ActionListener
+	{
 		private JFrame frame;
-
-		public About(JFrame ok) {
+		
+		public About(JFrame ok)
+		{
 			frame = ok;
 		}
-
-		public void actionPerformed(ActionEvent arg0) {
-			JOptionPane.showMessageDialog(frame,
-					"Java XML-parsing weather station viewer, Version 0.0.1");
+		
+		public void actionPerformed(ActionEvent arg0) 
+		{
+			JOptionPane.showMessageDialog(frame, "Java XML-parsing weather station viewer, Version 0.0.1");
 		}
 	}
-
-	private static class Open implements ActionListener {
+	
+	private static class Open implements ActionListener
+	{
 		private SelectionWindow frame;
-
-		public Open(SelectionWindow frame) {
+		public Open(SelectionWindow frame)
+		{
 			this.frame = frame;
 		}
-
-		public void actionPerformed(ActionEvent event) {
+		public void actionPerformed( ActionEvent event)
+		{
 			JFileChooser f = new JFileChooser();
 			Vector<Conditions> points = frame.getPoints();
 			f.setMultiSelectionEnabled(true);
 			int answer = f.showOpenDialog(frame);
-			if (answer == JFileChooser.APPROVE_OPTION) {
+			if(answer == JFileChooser.APPROVE_OPTION)
+			{
 				File[] list = f.getSelectedFiles();
-				for (File current : list) {
+				for(File current : list)
+				{
 					XMLParser p = new XMLParser(current.getAbsolutePath());
 					Vector<Conditions> ls = p.parse();
-					if (points == null)
+					if(points == null)
 						points = new Vector<Conditions>();
-					if (ls != null)
-						points.addAll(ls);
+					if(ls != null)
+					points.addAll(ls);
 				}
 				frame.setPoints(points);
 				frame.updateMap();
 			}
 			// If points isn't set, let's at least init it.
-			else if (points == null) {
+			else if(points == null)
+			{
 				Vector<Conditions> array = new Vector<Conditions>();
 				frame.setPoints(array);
 			}
 		}
 	}
-
-	private static class Quit implements ActionListener {
+	
+	private static class Quit implements ActionListener
+	{
 		private JFrame frame;
-
-		public Quit(JFrame frame) {
+		public Quit(JFrame frame)
+		{
 			this.frame = frame;
 		}
-
-		public void actionPerformed(ActionEvent event) {
+		public void actionPerformed( ActionEvent event)
+		{
 			frame.dispose();
 		}
 	}
-
-	private static class GraphAction implements ActionListener {
+	
+	private static class GraphAction implements ActionListener
+	{
 		SelectionWindow frame;
-
-		public GraphAction(SelectionWindow frame) {
+		public GraphAction(SelectionWindow frame)
+		{
+			this.frame = frame;
+		}
+	    // event handler method
+	    public void actionPerformed( ActionEvent event )
+	    {
+	    	if(frame.getDay() == null)
+	    	{
+	    		JOptionPane.showMessageDialog(frame, new JLabel("Oops, it looks like you forgot to initialize data! Please go to the file menu and open one or more valid XML files."));
+	    	}
+	    	else if( frame.getDay().isEmpty())
+	    	{
+	    		JOptionPane.showMessageDialog(frame, new JLabel("Please select a Year, Month, Week or Day to graph."));
+	    	}
+	    	else
+	    	{
+		    	GraphWindow g = new GraphWindow(frame.getPoints(), frame.getDay(), frame.getGraph());
+		    	g.setSize(1024,768);
+		    	g.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		    	g.setVisible(true);
+	    	}
+	    }
+	}
+	
+	private static class listChooser implements javax.swing.event.TreeSelectionListener
+	{
+		private SelectionWindow frame;
+		
+		public listChooser(SelectionWindow frame)
+		{
 			this.frame = frame;
 		}
 
-		// event handler method
-		public void actionPerformed(ActionEvent event) {
-			if (frame.getPoints() == null || frame.getPoints().isEmpty()) {
-				JOptionPane
-						.showMessageDialog(
-								frame,
-								new JLabel(
-										"Oops, it looks like you forgot to initialize data! Please go to the file menu and open one or more valid XML files."));
-			} else {
-				GraphWindow g = new GraphWindow(frame.getPoints(),
-						frame.getDay());
-				g.setSize(800, 600);
-				g.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-				g.setVisible(true);
+		@Override
+		public void valueChanged(TreeSelectionEvent e) 
+		{
+			JTree tree = (JTree)e.getSource();
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
+			
+			if(node != null)
+			{
+				switch(node.getLevel())
+				{
+				case 1:
+					frame.setGraph(GraphWindow.YEAR);
+					frame.setDay((String)node.getUserObject());
+					break;
+				case 2:
+					frame.setGraph(GraphWindow.MONTH);
+					frame.setDay((String)node.getUserObject());
+					break;
+				case 3:
+					frame.setGraph(GraphWindow.WEEK);
+					frame.setDay((String)node.getUserObject());
+					break;
+				case 4:
+					frame.setGraph(GraphWindow.DAY);
+					frame.setDay((String)node.getUserObject());
+					break;
+				default:
+					frame.setGraph(GraphWindow.DAY);
+					frame.setDay("");
+					break;
+				}
 			}
 		}
+
+		
+	}
+	
+	/**
+	 * @return the graph
+	 */
+	public int getGraph() {
+		return graph;
 	}
 
-	private static class DialAction implements ActionListener {
-		public void actionPerformed(ActionEvent event) {
+	/**
+	 * @param graph the graph to set
+	 */
+	public void setGraph(int graph) {
+		this.graph = graph;
+	}
+
+	private static class DialAction implements ActionListener
+	{
+		public void actionPerformed( ActionEvent event)
+		{
 			DialWindow d = new DialWindow();
-			d.setSize(800, 600);
+			d.setSize(800,600);
 			d.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 			d.setVisible(true);
 		}

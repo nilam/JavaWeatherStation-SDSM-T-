@@ -1,0 +1,99 @@
+Java Weather Viewer
+
+By Christopher Jensen, Joshua Kinkade and Marshall Gaucher
+
+User Manual
+
+Contents:
+	1.  Introduction
+	2.  Getting Started
+	2.1 Opening Files
+	2.2 Graphing Contents
+	3.  Implementation
+	3.1 Compiling from the Command Line
+
+1. Introduction
+  This Java-based XML Weather Viewer program is used to parse XML files with
+weather data, then view graphs of the data. Views can be set up to see
+individual days, weekly and monthly averages of days, or yearly averages for
+the monthly averages. A brief summary of statistics is also available.
+
+2. Getting Started
+  Execution can either be handled through an IDE or command-line execution. It
+is recommended that you either use an IDE or, after compiling, run the included
+shell script which should launch the program. This software was tested primarily
+in a POSIX-compliant environment, so Windows users may have to adjust the
+commands depending on the level of POSIX non-compliance the system administrator
+has decided to enforce.
+
+2.1 Opening Files
+  After starting up the program, files can be opened via the File menu option
+"Add Source file...", which will open a file selection dialog. Multiple XML
+files can be selected. After selecting the files, the tree below the buttons
+should show a hierarchy of years, then months, then weeks, then days.
+
+2.2 Graphing Contents
+  To set the graphing target, select a Year, Month, Week or Day from the tree
+view after opening one or more files. Then, either click the 
+"Graph the Interval" button, or select "Graph" from the Data menu. This will
+cause a new window to open, with the selected interval graphs and a column with
+a summary of the minimum, maximum and average of the different data points. If
+you click on a point in one of the graphs, the data point's statistics will be
+shown on the right-hand side.
+
+3. Implementation
+  The program uses JDom to parse the XML document. The result of parsing is a
+vector of a custom class, Conditions, which contains the relevant weather
+conditions and the time at which those conditions were recorded. The Conditions
+vector is then split up based upon its date, and inserted into a chain of
+TreeMaps. TreeMaps were used because organization on parsing was desired. 
+
+  The outermost map holds a String index, specifically the year in the date on 
+the associated points. The map returned by the "year" map is a map of Strings in
+the month on the associated points. These "month" maps return a map based on the
+week of the month, which in turn returns the vector of points associated with
+the fully-qualified day name. This structure was chosen because it would
+minimize data requirements and provide relatively easy access to specific data
+points. The hierarchical structure of the data also lends itself to a graphical
+tree structure, like the JTree, for selecting which elements to graph. The keys
+in the JTree are created by iteratively parsing the chain of maps at each level.
+
+The majority of the processing for the data is handled by the SelectionWindow
+class. Data is read in, processed into trees, and stored in the SelectionWindow.
+The GraphWindow is told the data to process, what to display in its titles, and
+what type of data period it is graphing. Using the DataCalculator class, it
+determines what the maximum, minimum and averages are and sends the values to
+a specially-designed frame which displays them in its own column. The
+GraphWindow also implements a mouse listener which associates click events with
+the final frame, which reports data based on the X-value of the click.
+
+The GraphCanvas is a completely agnostic relative graphing system using fixed-
+point integers to specify the proportion of the drawable area at which a point
+is to be drawn. It does not track anything beyond where to draw the points, and
+draws them in O(n) time.
+
+The point-drawing system is dependent upon a ConditionPoint class, which is
+specially designed to only check its x value when looking for equality. This
+particular fact is abused a couple of times because when performing lookups,
+a dummy conditionPoint can be created with no actual Conditions specified and
+still check for equality using the Java comparators built into the java.util
+collections. Once a match is found, the actual point is extracted, and then
+used for whatever data needs to be referenced. This has a side-effect that the
+listeners for the GraphCanvas only detect the horizontal position, so vertical
+position will actually be irrelevant.
+
+3.1 Compiling from the command line
+  Because the entire project is contianed within the jdom.jar file and the
+gui.pa2 package, the root directory should be the directory with this README in
+it, assuming you did not move it after etracting the tarball. From the root
+directory, the following command should compile the project into class files:
+
+javac -classpath gui/pa2/jdom.jar:gui/pa2 gui/pa2/*.java
+
+and the following command should run the program:
+
+java -classpath gui/pa2/jdom.jar:./ gui.pa2.Main
+
+You can also simply direct an IDE like Eclipse to the directory where the source
+files are contained, if you want an easier way to run the program. There is also
+a small bash script included which will attempt to simply run the program.

@@ -24,13 +24,13 @@ public class DataCalculator {
     public static final String MAX_WIND = " Max Wind Speed";
     public static final String WIND_DIR = " Prevailing Wind";
     
-    public static final String TOTAL_RAIN = "      Total Rainfall";
-    public static final String MAX_RAIN = "      Maximum Rainfall";
-    public static final String MIN_RAIN = "      Minimum Rainfall";
+    public static final String TOTAL_RAIN = "        Total Rainfall";
+    public static final String MAX_RAIN = "        Maximum Rainfall";
+    public static final String MIN_RAIN = "        Minimum Rainfall";
     
-    public static final String AVG_PRESSURE = "     Average Barometric Pressure";
-    public static final String MAX_PRESSURE = "     Max Barometric Pressure";
-    public static final String MIN_PRESSURE = "     Min Barometric Pressure";
+    public static final String AVG_PRESSURE = "      Average Barometric Pressure";
+    public static final String MAX_PRESSURE = "      Max Barometric Pressure";
+    public static final String MIN_PRESSURE = "      Min Barometric Pressure";
     
     public static final String AVG_HUM = "  Average Humidity";
     public static final String MAX_HUM = "  Maximum Humidity";
@@ -207,7 +207,7 @@ public class DataCalculator {
          * the start of the string is a cost-efficient way of forcing the strings into the correct order. We can remove the
          * extra white space by simply calling trim() on the strings before putting them into JLabels.
          */
-        map.put("       Rainfall", "-------------");
+        map.put("         Rainfall", "-------------");
         map.put(TOTAL_RAIN, new Float(totalRainfall) );
         map.put(MAX_RAIN, new Float(maxRain));
         map.put(MIN_RAIN, new Float(minRain));
@@ -220,7 +220,7 @@ public class DataCalculator {
         map.put( MAX_TEMP, new Float( maxTemp) );
         map.put( MIN_TEMP, new Float( minTemp) );
         
-        map.put("   Wind", "-------------");
+        map.put("  Wind", "-------------");
         if(windCount != 0)
         	map.put( AVG_WIND, new Float( WindSpeedSum / windCount ) );
         else
@@ -228,7 +228,7 @@ public class DataCalculator {
         map.put( MAX_WIND, new Float( maxWindSpeed) );
         map.put( WIND_DIR, prevailingWind );
         
-        map.put("      Pressure","-------------");
+        map.put("       Pressure","-------------");
         if(pressureCount != 0)
         	map.put(AVG_PRESSURE, new Float( pressureSum / pressureCount));
         else

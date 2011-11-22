@@ -2,54 +2,106 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+/**
+ * 
+ */
 package gui.pa2;
 
+import java.lang.reflect.Constructor;
 import java.util.Vector;
 import java.util.TreeMap;
 import java.util.Map;
+// TODO: Auto-generated Javadoc
+
 /**
+ * The Class DataCalculator.
  *
  * @author jmk
  */
+@SuppressWarnings("unused")
 public class DataCalculator {
     
+    /** The points. */
     private Vector<Conditions> points;
     
     // Accessor constants for the map. Add a new one if you add a new field to compute.
+    /** The Constant AVG_TEMP. */
     public static final String AVG_TEMP = "    Average Temperature";
+    
+    /** The Constant MAX_TEMP. */
     public static final String MAX_TEMP = "    Max Temperature";
+    
+    /** The Constant MIN_TEMP. */
     public static final String MIN_TEMP = "    Min Temperature";
     
+    /** The Constant AVG_WIND. */
     public static final String AVG_WIND = " Average Wind Speed";
+    
+    /** The Constant MAX_WIND. */
     public static final String MAX_WIND = " Max Wind Speed";
+    
+    /** The Constant WIND_DIR. */
     public static final String WIND_DIR = " Prevailing Wind";
     
+    /** The Constant TOTAL_RAIN. */
     public static final String TOTAL_RAIN = "      Total Rainfall";
+    
+    /** The Constant MAX_RAIN. */
     public static final String MAX_RAIN = "      Maximum Rainfall";
+    
+    /** The Constant MIN_RAIN. */
     public static final String MIN_RAIN = "      Minimum Rainfall";
     
+    /** The Constant AVG_PRESSURE. */
     public static final String AVG_PRESSURE = "     Average Barometric Pressure";
+    
+    /** The Constant MAX_PRESSURE. */
     public static final String MAX_PRESSURE = "     Max Barometric Pressure";
+    
+    /** The Constant MIN_PRESSURE. */
     public static final String MIN_PRESSURE = "     Min Barometric Pressure";
     
+    /** The Constant AVG_HUM. */
     public static final String AVG_HUM = "  Average Humidity";
+    
+    /** The Constant MAX_HUM. */
     public static final String MAX_HUM = "  Maximum Humidity";
+    
+    /** The Constant MIN_HUM. */
     public static final String MIN_HUM = "  Minimum Humidity";
     
+    /** The Constant AVG_UV. */
     public static final String AVG_UV = "Average UV";
+    
+    /** The Constant MAX_UV. */
     public static final String MAX_UV = "Maximum UV";
+    
+    /** The Constant MIN_UV. */
     public static final String MIN_UV = "Minimum UV";
     
+    /**
+     * Class Constructor.
+     *
+     * @param p the p
+     */
     public DataCalculator( Vector<Conditions> p )
     {
         points = p;
     }
     
+    /**
+     * Class Constructor.
+     */
     public DataCalculator()
     {
         points = null;
     }
     
+    /**
+     * Compute data.
+     *
+     * @return the tree map
+     */
     public TreeMap<String,Object> computeData()
     {
         TreeMap<String, Object> map = new TreeMap<String, Object>();
@@ -256,11 +308,21 @@ public class DataCalculator {
         return map;
     }
     
+    /**
+     * Gets the points.
+     *
+     * @return the points
+     */
     public Vector<Conditions> getPoints()
     {
         return points;
     }
     
+    /**
+     * Sets the points.
+     *
+     * @param p the new points
+     */
     public void setPoints(Vector<Conditions> p)
     {
         points = p;

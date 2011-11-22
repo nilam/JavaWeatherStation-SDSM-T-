@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package gui.pa2;
 
 import java.awt.Button;
@@ -19,16 +22,41 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class SelectionWindow.
+ *
+ * @author 1828107
+ */
 @SuppressWarnings("serial")
+/**
+ * 
+ */
 public class SelectionWindow extends JFrame {
 	
+	/** The points. */
 	private Vector<Conditions> points;
+	
+	/** The map. */
 	private TreeMap<String, Vector<Conditions>> map;
+	
+	/** The day. */
 	private String day;
+	
+	/** The lists. */
 	private TreeMap<String, TreeMap<String, TreeMap<String, ArrayList<String> > > > lists;
+	
+	/** The panel. */
 	private JTree panel;
+	
+	/** The graph. */
 	private int graph;
 
+	/**
+	 * Instantiates a new selection window.
+	 *
+	 * @throws HeadlessException the headless exception
+	 */
 	public SelectionWindow() throws HeadlessException {
 		super();
 		points = null;
@@ -38,7 +66,7 @@ public class SelectionWindow extends JFrame {
 		lists = new TreeMap<String, TreeMap<String, TreeMap<String, ArrayList<String> > > >();
 		panel = new JTree( new DefaultMutableTreeNode("No data entered.") );
 		panel.addTreeSelectionListener(new listChooser(this));
-		panel.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		panel.getSelectionModel().setSelectionMode(TreeSelectionModel.CONTIGUOUS_TREE_SELECTION);
 		
 		// Menu bar initialization
 		MenuBar bar = new MenuBar();
@@ -75,6 +103,9 @@ public class SelectionWindow extends JFrame {
 		pack();
 	}
 	
+	/**
+	 * Update map.
+	 */
 	public void updateMap()
 	{
 		Vector<Conditions> parse = new Vector<Conditions>(points);
@@ -167,11 +198,21 @@ public class SelectionWindow extends JFrame {
 		repaint();
 	}
 	
+	/**
+	 * Sets the points.
+	 *
+	 * @param points the new points
+	 */
 	public void setPoints(Vector<Conditions> points)
 	{
 		this.points = points;
 	}
 	
+	/**
+	 * Gets the points.
+	 *
+	 * @return the points
+	 */
 	public Vector<Conditions> getPoints()
 	{
 		if(day == null || points == null || map == null || day.isEmpty() || map.isEmpty())
@@ -279,38 +320,80 @@ public class SelectionWindow extends JFrame {
 		return points;
 	}
 	
+	/**
+	 * Gets the day.
+	 *
+	 * @return the day
+	 */
 	public String getDay()
 	{
 		return day;
 	}
 	
+	/**
+	 * Sets the day.
+	 *
+	 * @param newDay the new day
+	 */
 	public void setDay(String newDay)
 	{
 		day = newDay;
 	}
 	
+	/**
+	 * The Class About.
+	 *
+	 * @author 1828107
+	 */
 	private static class About implements ActionListener
 	{
+		
+		/** The frame. */
 		private JFrame frame;
 		
+		/**
+		 * Instantiates a new about.
+		 *
+		 * @param ok the ok
+		 */
 		public About(JFrame ok)
 		{
 			frame = ok;
 		}
 		
+		/* (non-Javadoc)
+		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 */
 		public void actionPerformed(ActionEvent arg0) 
 		{
 			JOptionPane.showMessageDialog(frame, "Java XML-parsing weather station viewer, Version 0.0.1");
 		}
 	}
 	
+	/**
+	 * The Class Open.
+	 *
+	 * @author 1828107
+	 */
 	private static class Open implements ActionListener
 	{
+		
+		/** The frame. */
 		private SelectionWindow frame;
+		
+		/**
+		 * Instantiates a new open.
+		 *
+		 * @param frame the frame
+		 */
 		public Open(SelectionWindow frame)
 		{
 			this.frame = frame;
 		}
+		
+		/* (non-Javadoc)
+		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 */
 		public void actionPerformed( ActionEvent event)
 		{
 			JFileChooser f = new JFileChooser();
@@ -341,27 +424,66 @@ public class SelectionWindow extends JFrame {
 		}
 	}
 	
+	/**
+	 * The Class Quit.
+	 *
+	 * @author 1828107
+	 */
 	private static class Quit implements ActionListener
 	{
+		
+		/** The frame. */
 		private JFrame frame;
+		
+		/**
+		 * Instantiates a new quit.
+		 *
+		 * @param frame the frame
+		 */
 		public Quit(JFrame frame)
 		{
 			this.frame = frame;
 		}
+		
+		/**
+		 * Action performed.
+		 * 
+		 * @param event
+		 *            the event
+		 */
 		public void actionPerformed( ActionEvent event)
 		{
 			frame.dispose();
 		}
 	}
 	
+	/**
+	 * The Class GraphAction.
+	 *
+	 * @author 1828107
+	 */
 	private static class GraphAction implements ActionListener
 	{
+		
+		/** The frame. */
 		SelectionWindow frame;
+		
+		/**
+		 * Instantiates a new graph action.
+		 *
+		 * @param frame the frame
+		 */
 		public GraphAction(SelectionWindow frame)
 		{
 			this.frame = frame;
 		}
 	    // event handler method
+		/**
+		 * Action performed.
+		 * 
+		 * @param event
+		 *            the event
+		 */
 	    public void actionPerformed( ActionEvent event )
 	    {
 	    	if(frame.getDay() == null)
@@ -382,16 +504,34 @@ public class SelectionWindow extends JFrame {
 	    }
 	}
 	
+	/**
+	 * The Class listChooser.
+	 *
+	 * @author 1828107
+	 */
 	private static class listChooser implements javax.swing.event.TreeSelectionListener
 	{
+		
+		/** The frame. */
 		private SelectionWindow frame;
 		
+		/**
+		 * Instantiates a new list chooser.
+		 *
+		 * @param frame the frame
+		 */
 		public listChooser(SelectionWindow frame)
 		{
 			this.frame = frame;
 		}
 
+		/* (non-Javadoc)
+		 * @see javax.swing.event.TreeSelectionListener#valueChanged(javax.swing.event.TreeSelectionEvent)
+		 */
 		@Override
+		/**
+		 * 
+		 */
 		public void valueChanged(TreeSelectionEvent e) 
 		{
 			JTree tree = (JTree)e.getSource();
@@ -429,6 +569,8 @@ public class SelectionWindow extends JFrame {
 	}
 	
 	/**
+	 * Gets the graph.
+	 *
 	 * @return the graph
 	 */
 	public int getGraph() {
@@ -436,14 +578,25 @@ public class SelectionWindow extends JFrame {
 	}
 
 	/**
+	 * Sets the graph.
+	 *
 	 * @param graph the graph to set
 	 */
 	public void setGraph(int graph) {
 		this.graph = graph;
 	}
 
+/**
+ * The Class DialAction.
+ *
+ * @author 1828107
+ */
 	private static class DialAction implements ActionListener
 	{
+		
+		/* (non-Javadoc)
+		 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+		 */
 		public void actionPerformed( ActionEvent event)
 		{
 			DialWindow d = new DialWindow();
@@ -453,14 +606,31 @@ public class SelectionWindow extends JFrame {
 		}
 	}
 
+/**
+ * Instantiates a new selection window.
+ *
+ * @param gc the gc
+ */
 	public SelectionWindow(GraphicsConfiguration gc) {
 		super(gc);
 	}
 
+/**
+ * Instantiates a new selection window.
+ *
+ * @param title the title
+ * @throws HeadlessException the headless exception
+ */
 	public SelectionWindow(String title) throws HeadlessException {
 		super(title);
 	}
 
+/**
+ * Instantiates a new selection window.
+ *
+ * @param title the title
+ * @param gc the gc
+ */
 	public SelectionWindow(String title, GraphicsConfiguration gc) {
 		super(title, gc);
 	}

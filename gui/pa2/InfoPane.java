@@ -1,3 +1,7 @@
+/*
+ * 
+ */
+
 package gui.pa2;
 
 import java.util.Calendar;
@@ -9,14 +13,29 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 
 import java.awt.CardLayout;
+// TODO: Auto-generated Javadoc
 
+/**
+ * The Class InfoPane.
+ *
+ * @author 1828107
+ */
+@SuppressWarnings("serial")
 public class InfoPane extends JPanel 
 {
+	
+	/** The point. */
 	private ConditionPoint point;
 	
+	/** The Constant FRONT_PANE. */
 	public static final String FRONT_PANE = "front";
+	
+	/** The Constant DATA_PANE. */
 	public static final String DATA_PANE = "data";
 	
+	/**
+	 * Class Constructor;.
+	 */
 	public InfoPane()
 	{
 		super();
@@ -42,11 +61,19 @@ public class InfoPane extends JPanel
 		add(front, FRONT_PANE);
 	}
 	
+	/**
+	 * Sets the point.
+	 *
+	 * @param point the new point
+	 */
 	public void setPoint(ConditionPoint point)
 	{
 		this.point = point;
 	}
 	
+	/**
+	 * Show info.
+	 */
 	public void showInfo()
 	{
 		// Don't let this panel try to print out a null point.
@@ -122,25 +149,3 @@ public class InfoPane extends JPanel
 		lay.show(this, DATA_PANE);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

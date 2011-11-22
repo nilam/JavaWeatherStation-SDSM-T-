@@ -1,26 +1,64 @@
+/*
+ * 
+ */
 package gui.pa2;
 
 import java.util.Date;
 
+// TODO: Auto-generated Javadoc
 /* Note: I did this in Eclipse, and let Eclipse generate some of the getters/setters.
  * This is not because I don't understand how, but because it's tedious.
  */
+/**
+ * The Class Conditions.
+ *
+ * 
+ */
 public class Conditions {
+	
+	/** The temperature. */
 	private float temperature;
+	
+	/** The pressure. */
 	private float pressure;
+	
+	/** The humidity. */
 	private float humidity;
+	
+	/** The uv. */
 	private float uv;
+	
+	/** The rain. */
 	private float rain;
+	
+	/** The wind. */
 	private float wind;
+	
+	/** The wind angle. */
 	private String windAngle;
+	
+	/** The day. */
 	private Date day;
 	
+	/** The Constant INVALID_TEMP. */
 	public final static float INVALID_TEMP = -500;
+	
+	/** The Constant INVALID_PRESSURE. */
 	public final static float INVALID_PRESSURE = 0;
+	
+	/** The Constant INVALID_HUMIDITY. */
 	public final static float INVALID_HUMIDITY = -1;
+	
+	/** The Constant INVALID_UV. */
 	public final static float INVALID_UV = -1;
+	
+	/** The Constant INVALID_RAIN. */
 	public final static float INVALID_RAIN = -1;
+	
+	/** The Constant INVALID_WIND. */
 	public final static float INVALID_WIND = -1;
+	
+	/** The Constant INVALID_DIRECTION. */
 	public final static String INVALID_DIRECTION = "Undefined Direction";
 	
 	/**
@@ -38,6 +76,18 @@ public class Conditions {
 		windAngle = INVALID_DIRECTION; // Normally one of the 16 values.
 	}
 	
+	/**
+	 * Instantiates a new conditions.
+	 *
+	 * @param temperature the temperature
+	 * @param pressure the pressure
+	 * @param humidity the humidity
+	 * @param uv the uv
+	 * @param rain the rain
+	 * @param wind the wind
+	 * @param windAngle the wind angle
+	 * @param day the day
+	 */
 	public Conditions(float temperature, float pressure, float humidity,
 			float uv, float rain, float wind, String windAngle, Date day) 
 	{
@@ -51,6 +101,10 @@ public class Conditions {
 		this.day = day;
 	}
 	
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString()
 	{
 		String out = "";
@@ -76,6 +130,8 @@ public class Conditions {
 	}
 
 	/**
+	 * Gets the day.
+	 *
 	 * @return the day
 	 */
 	public Date getDay() {
@@ -83,6 +139,8 @@ public class Conditions {
 	}
 
 	/**
+	 * Sets the day.
+	 *
 	 * @param day the day to set
 	 */
 	public void setDay(Date day) {
@@ -91,6 +149,8 @@ public class Conditions {
 
 	
 	/**
+	 * Gets the temperature.
+	 *
 	 * @return the temperature
 	 */
 	public float getTemperature() {
@@ -98,6 +158,8 @@ public class Conditions {
 	}
 	
 	/**
+	 * Sets the temperature.
+	 *
 	 * @param temperature the temperature to set
 	 */
 	public void setTemperature(float temperature) {
@@ -105,6 +167,8 @@ public class Conditions {
 	}
 	
 	/**
+	 * Gets the pressure.
+	 *
 	 * @return the pressure
 	 */
 	public float getPressure() {
@@ -112,6 +176,8 @@ public class Conditions {
 	}
 	
 	/**
+	 * Sets the pressure.
+	 *
 	 * @param pressure the pressure to set
 	 */
 	public void setPressure(float pressure) {
@@ -119,6 +185,8 @@ public class Conditions {
 	}
 	
 	/**
+	 * Gets the humidity.
+	 *
 	 * @return the humidity
 	 */
 	public float getHumidity() {
@@ -126,6 +194,8 @@ public class Conditions {
 	}
 	
 	/**
+	 * Sets the humidity.
+	 *
 	 * @param humidity the humidity to set
 	 */
 	public void setHumidity(float humidity) {
@@ -133,6 +203,8 @@ public class Conditions {
 	}
 	
 	/**
+	 * Gets the uv.
+	 *
 	 * @return the uv
 	 */
 	public float getUv() {
@@ -140,6 +212,8 @@ public class Conditions {
 	}
 	
 	/**
+	 * Sets the uv.
+	 *
 	 * @param uv the UV Index to set, arbitrary number between 0 and 15
 	 */
 	public void setUv(float uv) {
@@ -147,6 +221,8 @@ public class Conditions {
 	}
 	
 	/**
+	 * Gets the rain.
+	 *
 	 * @return Rainfall at this data point, in inches.
 	 */
 	public float getRain() {
@@ -154,6 +230,8 @@ public class Conditions {
 	}
 	
 	/**
+	 * Sets the rain.
+	 *
 	 * @param rain The amount of rainfall at this data point, in inches.
 	 */
 	public void setRain(float rain) {
@@ -161,6 +239,8 @@ public class Conditions {
 	}
 	
 	/**
+	 * Gets the wind.
+	 *
 	 * @return Wind speed at this data point, in Miles / Hour.
 	 */
 	public float getWind() {
@@ -168,6 +248,8 @@ public class Conditions {
 	}
 	
 	/**
+	 * Sets the wind.
+	 *
 	 * @param wind Speed of the wind, in Miles / Hour.
 	 */
 	public void setWind(float wind) {
@@ -175,6 +257,8 @@ public class Conditions {
 	}
 	
 	/**
+	 * Gets the wind angle.
+	 *
 	 * @return the current wind direction, as a string.
 	 */
 	public String getWindAngle() {
@@ -182,6 +266,8 @@ public class Conditions {
 	}
 	
 	/**
+	 * Sets the wind angle.
+	 *
 	 * @param windAngle the windAngle to set
 	 */
 	public void setWindAngle(String windAngle) {

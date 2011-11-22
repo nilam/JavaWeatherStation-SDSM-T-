@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package gui.pa2;
 
 import java.awt.event.MouseEvent;
@@ -6,27 +9,53 @@ import java.util.*;
 
 import javax.swing.*;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class GraphWindow.
+ *
+ * @author 1828107
+ */
 @SuppressWarnings("serial")
+/**
+ * 
+ */
 public class GraphWindow extends JFrame {
 	
 
+    /** The Constant DAY. */
     public final static int DAY = 0;
+    
+    /** The Constant WEEK. */
     public final static int WEEK = 1;
+    
+    /** The Constant MONTH. */
     public final static int MONTH = 2;
+    
+    /** The Constant YEAR. */
     public final static int YEAR = 3;
+    
+    /** The time strings. */
     private String[] timeStrings = {"Hour", "Day", "Day", "Day"};
     
-    
+    /**
+     * Instantiates a new graph window.
+     *
+     * @param in_pts the in_pts
+     * @param today the today
+     */
     public GraphWindow(Vector<Conditions> in_pts, String today)
     {
         this( in_pts, today, GraphWindow.DAY);
     }
+	
 	/**
 	 * Creates a new daily graph window from the given set of conditions and day.
 	 * The day should be passed in as a string in the format it should appear on
 	 * the graphs and title of the window.
-	 * @param points a vector of gui.pa2.Conditions describing the weather over the interval.
+	 *
+	 * @param in_pts a vector of gui.pa2.Conditions describing the weather over the interval.
 	 * @param today the date, as a string formatted as the date should appear on the graphs and title bar.
+	 * @param timePeriod the time period
 	 */
 	public GraphWindow(Vector<Conditions> in_pts, String today, int timePeriod )
 	{
@@ -301,15 +330,32 @@ public class GraphWindow extends JFrame {
 		
 	}
 	
+	/**
+	 * The Class PointClick.
+	 *
+	 * @author 1828107
+	 */
 	private class PointClick implements MouseListener
 	{
+		
+		/** The target. */
 		private InfoPane target;
 		
+		/**
+		 * Instantiates a new point click.
+		 *
+		 * @param pane the pane
+		 */
 		public PointClick(InfoPane pane)
 		{
 			target = pane;
 		}
-
+		
+		/**
+		 * Mouse clicked.
+		 *
+		 * @param arg0 the arg0
+		 */
 		public void mouseClicked(MouseEvent arg0) 
 		{
 			int x = arg0.getX();
@@ -337,19 +383,39 @@ public class GraphWindow extends JFrame {
 			    target.showInfo();
 			}
 		}
-
+		
+		/**
+		 * Mouse entered.
+		 *
+		 * @param arg0 the arg0
+		 */
 		public void mouseEntered(MouseEvent arg0) 
 		{
 		}
-
+		
+		/**
+		 * Mouse exited.
+		 *
+		 * @param arg0 the arg0
+		 */
 		public void mouseExited(MouseEvent arg0) 
 		{
 		}
-
+		
+		/**
+		 * Mouse pressed.
+		 *
+		 * @param arg0 the arg0
+		 */
 		public void mousePressed(MouseEvent arg0) 
 		{
 		}
-
+		
+		/**
+		 * Mouse released.
+		 *
+		 * @param arg0 the arg0
+		 */
 		public void mouseReleased(MouseEvent arg0) 
 		{
 		}

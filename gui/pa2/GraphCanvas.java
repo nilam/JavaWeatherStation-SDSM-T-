@@ -1,35 +1,79 @@
+/*
+ * 
+ */
 package gui.pa2;
 
 import java.awt.*;
 import java.util.*;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class GraphCanvas.
+ */
 @SuppressWarnings("serial")
+/**
+ * 
+ */
 public class GraphCanvas extends Canvas {
 	
 	// The conditions to graph
+	/** The map. */
 	private TreeSet<ConditionPoint> map;
+	
+	/** The relative map. */
 	private Vector<ConditionPoint> relativeMap;
 	// The title of the graph.
+	/** The title. */
 	private String title;
+    
+    /** The time units. */
     private String timeUnits;
+	
+	/** The pt. */
 	private Point pt;
+	
+	/** The num divs. */
 	private float numDivs;
 	
+	/**
+	 * Gets the map.
+	 *
+	 * @return the map
+	 */
 	public TreeSet<ConditionPoint> getMap()
 	{
 		return map;
 	}
 	
+	/**
+	 * Gets the relative.
+	 *
+	 * @return the relative
+	 */
 	public Vector<ConditionPoint> getRelative()
 	{
 		return relativeMap;
 	}
 	
+	/**
+	 * Sets the point.
+	 *
+	 * @param p the new point
+	 */
 	public void setPoint(Point p)
 	{
 		pt = p;
 	}
 	
+	/**
+	 * Instantiates a new graph canvas.
+	 *
+	 * @param points the points
+	 * @param title the title
+	 * @param unit the unit
+	 * @param timeUnits the time units
+	 * @param numDivs the num divs
+	 */
 	public GraphCanvas(TreeSet<ConditionPoint> points, String title, String unit, String timeUnits, float numDivs)
 	{
 		super();
@@ -41,6 +85,11 @@ public class GraphCanvas extends Canvas {
 		relativeMap = new Vector<ConditionPoint>();
 	}
 	
+	/**
+	 * Paint.
+	 *
+	 * @param g the g
+	 */
 	public void paint(Graphics g)
 	{
 

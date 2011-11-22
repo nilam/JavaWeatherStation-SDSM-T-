@@ -1,30 +1,65 @@
+/*
+ * 
+ */
 package gui.pa2;
 
 import org.jdom.*;
 import org.jdom.input.SAXBuilder;
 import java.io.IOException;
 import java.util.*;
+// TODO: Auto-generated Javadoc
 
+/**
+ * The Class XMLParser.
+ *
+ * @author 1828107
+ */
 public class XMLParser
 {
+    
+    /** The filename. */
     private String filename;
-
+    
+    /**
+     * Instantiates a new xML parser.
+     *
+     * @param file the file
+     */
     public XMLParser(String file)
     {
     	filename = file;
     }
-
+    
+    /**
+     * Gets the file name.
+     *
+     * @return the file name
+     */
     public String getFileName()
     {
         return filename;
     }
 
+/**
+ * Sets the file name.
+ *
+ * @param name the new file name
+ */
     public void setFileName( String name )
     {
         filename = name;
     }
     
+    /**
+     * Parses the.
+     *
+     * @return the vector
+     */
     @SuppressWarnings("unchecked")
+    
+    /**
+     * 
+     */
 	public Vector<Conditions> parse()
     {
     		Vector<Conditions> conditions = new Vector<Conditions>();

@@ -1,11 +1,22 @@
+/*
+ * 
+ */
 package gui.pa2;
 import javax.swing.UIManager;
 import javax.swing.UIManager.*;
+// TODO: Auto-generated Javadoc
 
+/**
+ * The Class Main.
+ *
+ * @author 1828107
+ */
 public class Main {
 
 	/**
-	 * @param args
+	 * The main method.
+	 *
+	 * @param args the arguments
 	 */
 	public static void main(String[] args) 
 	{

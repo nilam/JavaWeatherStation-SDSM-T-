@@ -78,6 +78,18 @@ public class SelectionWindow extends JFrame {
 		i.addActionListener(new Quit(this));
 		m.add(i);
 		bar.add(m);
+                
+                m = new Menu("Data");
+                i = new MenuItem("Summarize Data");
+                i.addActionListener( new SummaryAction(this));
+                m.add(i);
+                
+                i = new MenuItem("Graph Data");
+                i.addActionListener(new GraphAction(this));
+                m.add(i);
+                
+                bar.add(m);
+                
 		m = new Menu("Help");
 		i = new MenuItem("About the Weather Viewer...");
 		i.addActionListener(new About(this));
@@ -92,8 +104,8 @@ public class SelectionWindow extends JFrame {
 		Button tempButton = new Button("Graph the interval");
 		tempButton.addActionListener(new GraphAction(this));
 		left.add(tempButton);
-		tempButton = new Button("Show various controls");
-		tempButton.addActionListener(new DialAction());
+		tempButton = new Button("Summarize Data");
+		tempButton.addActionListener(new SummaryAction(this));
 		left.add(tempButton);
 		left.add(new JScrollPane(panel));
 		
@@ -340,11 +352,42 @@ public class SelectionWindow extends JFrame {
 		day = newDay;
 	}
 	
+<<<<<<< HEAD
 	/**
 	 * The Class About.
 	 *
 	 * @author 1828107
 	 */
+=======
+        private static class SummaryAction implements ActionListener
+        {
+            private SelectionWindow frame;
+            
+            public SummaryAction(SelectionWindow frame)
+            {
+                this.frame = frame;
+            }
+            
+            public void actionPerformed( ActionEvent event)
+            {
+                
+                if( frame.getDay() == null )
+                {
+                    JOptionPane.showMessageDialog(frame, "Please select a file of weather data.");
+                }
+                else if( frame.getDay().isEmpty())
+                {
+                    JOptionPane.showMessageDialog(frame, "Please select a year, month, week, or day.");
+                }
+                else
+                {
+                    InfoWindow summary = new InfoWindow(frame.getPoints(),frame.graph,frame.getDay() );
+                    summary.setVisible(true);
+                }
+            }
+        }
+        
+>>>>>>> bb2cf96f7600d2707d6405d0833f38b3aa5050d8
 	private static class About implements ActionListener
 	{
 		
